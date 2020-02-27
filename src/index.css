@@ -24,7 +24,7 @@ code {
   width: 100vw;
 }
 
-.main__video {
+.main__video, .main__image {
   display: none;
 }
 

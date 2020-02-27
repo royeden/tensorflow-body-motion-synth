@@ -1,25 +1,27 @@
-import React, { useEffect, useRef, useState } from 'react';
-import * as bodyPix from '@tensorflow-models/body-pix';
+import React, { useEffect, useRef, useState } from "react";
+import * as bodyPix from "@tensorflow-models/body-pix";
 
-import { AudioContext } from './audio/audioContext';
-import { useInterval } from './hooks/useInterval';
-import { useToggle } from './hooks/useToggle';
-import { drawVideo } from './utils/canvas';
+import { AudioContext } from "./audio/audioContext";
+import { useInterval } from "./hooks/useInterval";
+import { useToggle } from "./hooks/useToggle";
+import { drawVideo } from "./utils/canvas";
 
 const messages = {
-  noVideo: 'No stream is being captured',
-  video: 'Viewing camera feed!'
+  noVideo: "No stream is being captured",
+  video: "Viewing camera feed!"
 };
 
 function App() {
   const audioContext = useRef();
   const net = useRef();
   const video = useRef();
+  const image = useRef();
   const canvas = useRef();
 
-  const [trackingLoading, toggleTrackingLoading] = useToggle();
+  const [trackingLoaded, toggleTrackingLoaded] = useToggle();
   const [trackingActive, toggleTrackingActive] = useToggle();
   const [videoActive, toggleVideoActive] = useToggle();
+  const [imageSrc, setImageSrc] = useState("");
   const [canvasDimensions, setCanvasDimensions] = useState({
     height: 0,
     width: 0
@@ -29,41 +31,49 @@ function App() {
   useInterval(async () => {
     const canvasNode = canvas.current;
     const videoNode = video.current;
-    const model = net.current;
-    if (canvasNode && videoNode && model) {
-      const context = drawVideo(canvasNode, videoNode);
-      const image = context.getImageData(
-        0,
-        0,
-        canvasDimensions.width,
-        canvasDimensions.height
-      );
-      const segmentation = await model.segmentPerson(image);
-      const coloredPartImage = bodyPix.toMask(segmentation);
-      const opacity = 0.7;
-      const flipHorizontal = false;
-      const maskBlurAmount = 0;
-      console.log(coloredPartImage, image)
-      context.putImageData(coloredPartImage, 0, 0);
-      // drawVideo(canvasNode, coloredPartImage);
-      // bodyPix.drawMask(
-      //   canvasNode,
-      //   image,
-      //   coloredPartImage,
-      //   opacity,
-      //   maskBlurAmount,
-      //   flipHorizontal
-      // );
+    if (canvasNode && videoNode) {
+      drawVideo(canvasNode, videoNode);
+      setImageSrc(canvasNode.toDataURL("image/png"));
     }
   }, canvasIntervalDelay);
 
   useEffect(() => {
-    if (!trackingActive && !trackingLoading) {
-      toggleTrackingLoading();
+    const canvasNode = canvas.current;
+    const imageNode = image.current;
+    const model = net.current;
+    if (
+      imageNode &&
+      imageNode.height &&
+      imageNode.width &&
+      model &&
+      trackingActive
+    ) {
+      async function drawSegmentations() {
+        const segmentation = await model.segmentMultiPersonParts(imageNode);
+        const coloredPartImage = bodyPix.toColoredPartMask(segmentation);
+        const opacity = 0.7;
+        const flipHorizontal = false;
+        const maskBlurAmount = 0;
+        bodyPix.drawMask(
+          canvasNode,
+          imageNode,
+          coloredPartImage,
+          opacity,
+          maskBlurAmount,
+          flipHorizontal
+        );
+      }
+      drawSegmentations();
+    }
+  }, [imageSrc, trackingActive]);
+
+  useEffect(() => {
+    if (!trackingActive && !trackingLoaded) {
+      toggleTrackingLoaded();
       async function getModel() {
         net.current = await bodyPix.load();
 
-        console.log('loaded model!');
+        console.log("loaded model!");
         console.log(net.current);
         toggleTrackingActive();
       }
@@ -71,9 +81,9 @@ function App() {
     }
   }, [
     toggleTrackingActive,
-    toggleTrackingLoading,
+    toggleTrackingLoaded,
     trackingActive,
-    trackingLoading
+    trackingLoaded
   ]);
 
   useEffect(() => {
@@ -85,7 +95,7 @@ function App() {
         audioContext.current = new AudioContext();
       })
       .catch(function(err) {
-        console.log('An error occurred: ' + err);
+        console.log("An error occurred: " + err);
       });
   }, []);
 
@@ -127,13 +137,17 @@ function App() {
       >
         {videoActive ? messages.video : messages.noVideo}
       </video>
+      <button onClick={toggleTrackingActive}>
+        {trackingActive ? "Stop" : "Start"} Tracking
+      </button>
       <button
         onClick={() =>
           setCanvasIntervalDelay(prev => (prev ? null : 1000 / 60))
         }
       >
-        Stop Tracking
+        {canvasIntervalDelay ? "Stop" : "Start"} Camera
       </button>
+      <img className="main__image" ref={image} src={imageSrc} alt="" />
       <canvas
         className="main__canvas"
         ref={canvas}
