@@ -25,5 +25,9 @@ code {
 }
 
 .main__video {
+  display: none;
+}
+
+.main__canvas {
   transform: rotateY(180deg);
 }
