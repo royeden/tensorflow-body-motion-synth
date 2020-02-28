@@ -51,7 +51,10 @@ function App() {
       const model = net.current;
       if (imageNode && imageNode.height && imageNode.width && model) {
         const segmentations = await model.segmentMultiPersonParts(imageNode, {
-          internalResolution: isMobile ? "low" : "medium"
+          internalResolution: isMobile ? "low" : "medium",
+          scoreThreshold: isMobile ? 0.2 : 0.4,
+          maxDetections: isMobile ? 8 : 10,
+          refineSteps: isMobile ? 8 : 10
         });
         const coloredPartImage = bodyPix.toColoredPartMask(segmentations);
         const opacity = 0.7;
