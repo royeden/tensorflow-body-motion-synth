@@ -11,8 +11,11 @@ const messages = {
   video: "Viewing camera feed!"
 };
 
+const THRESHOLD = 0.7;
+
 function App() {
   const audioContext = useRef();
+  const oscillator = useRef();
   const net = useRef();
   const video = useRef();
   const image = useRef();
@@ -20,6 +23,7 @@ function App() {
 
   const [trackingLoaded, toggleTrackingLoaded] = useToggle();
   const [trackingActive, toggleTrackingActive] = useToggle();
+  const [audioActive, toggleAudioActive] = useToggle();
   const [videoActive, toggleVideoActive] = useToggle();
   const [imageSrc, setImageSrc] = useState("");
   const [canvasDimensions, setCanvasDimensions] = useState({
@@ -28,7 +32,7 @@ function App() {
   });
   const [canvasIntervalDelay, setCanvasIntervalDelay] = useState(null);
 
-  useInterval(async () => {
+  useInterval(() => {
     const canvasNode = canvas.current;
     const videoNode = video.current;
     if (canvasNode && videoNode) {
@@ -37,20 +41,14 @@ function App() {
     }
   }, canvasIntervalDelay);
 
-  useEffect(() => {
-    const canvasNode = canvas.current;
-    const imageNode = image.current;
-    const model = net.current;
-    if (
-      imageNode &&
-      imageNode.height &&
-      imageNode.width &&
-      model &&
-      trackingActive
-    ) {
-      async function drawSegmentations() {
-        const segmentation = await model.segmentMultiPersonParts(imageNode);
-        const coloredPartImage = bodyPix.toColoredPartMask(segmentation);
+  useInterval(
+    async () => {
+      const canvasNode = canvas.current;
+      const imageNode = image.current;
+      const model = net.current;
+      if (imageNode && imageNode.height && imageNode.width && model) {
+        const segmentations = await model.segmentMultiPersonParts(imageNode);
+        const coloredPartImage = bodyPix.toColoredPartMask(segmentations);
         const opacity = 0.7;
         const flipHorizontal = false;
         const maskBlurAmount = 0;
@@ -62,10 +60,27 @@ function App() {
           maskBlurAmount,
           flipHorizontal
         );
+        if (segmentations && segmentations[0]) {
+          const segmentation = segmentations[0];
+          const leftWrist = segmentation.pose.keypoints.find(
+            ({ part }) => part === "leftWrist"
+          );
+          if (leftWrist.score >= THRESHOLD) {
+            oscillator.current.frequency.setValueAtTime(
+              440,
+              audioContext.current.currentTime
+            );
+          } else {
+            oscillator.current.frequency.setValueAtTime(
+              220,
+              audioContext.current.currentTime
+            );
+          }
+        }
       }
-      drawSegmentations();
-    }
-  }, [imageSrc, trackingActive]);
+    },
+    trackingActive ? canvasIntervalDelay : null
+  );
 
   useEffect(() => {
     if (!trackingActive && !trackingLoaded) {
@@ -92,7 +107,16 @@ function App() {
       .then(function(stream) {
         const videoNode = video.current;
         videoNode.srcObject = stream;
-        audioContext.current = new AudioContext();
+        const tmpAudioContext = new AudioContext();
+        const tmpOscillator = tmpAudioContext.createOscillator();
+        tmpOscillator.type = "square";
+        tmpOscillator.frequency.setValueAtTime(
+          440,
+          tmpAudioContext.currentTime
+        );
+        tmpOscillator.start();
+        audioContext.current = tmpAudioContext;
+        oscillator.current = tmpOscillator;
       })
       .catch(function(err) {
         console.log("An error occurred: " + err);
@@ -137,6 +161,15 @@ function App() {
       >
         {videoActive ? messages.video : messages.noVideo}
       </video>
+      <button
+        onClick={() => {
+          toggleAudioActive();
+          if (!audioActive) oscillator.current.connect(audioContext.current.destination);
+          else oscillator.current.disconnect(audioContext.current.destination);
+        }}
+      >
+        {audioActive ? "Stop" : "Start"} Synth
+      </button>
       <button onClick={toggleTrackingActive}>
         {trackingActive ? "Stop" : "Start"} Tracking
       </button>
