@@ -103,7 +103,14 @@ function App() {
 
   useEffect(() => {
     navigator.mediaDevices
-      .getUserMedia({ video: true, audio: false })
+      .getUserMedia({
+        video: {
+          width: { min: 320, ideal: 640, max: 640 },
+          height: { min: 240, ideal: 480, max: 480 },
+          facingMode: { exact: "environment" }
+        },
+        audio: false
+      })
       .then(function(stream) {
         const videoNode = video.current;
         videoNode.srcObject = stream;
@@ -164,7 +171,8 @@ function App() {
       <button
         onClick={() => {
           toggleAudioActive();
-          if (!audioActive) oscillator.current.connect(audioContext.current.destination);
+          if (!audioActive)
+            oscillator.current.connect(audioContext.current.destination);
           else oscillator.current.disconnect(audioContext.current.destination);
         }}
       >
