@@ -2,10 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import * as bodyPix from "@tensorflow-models/body-pix";
 
 import { AudioContext } from "./audio/audioContext";
-import { useInterval } from "./hooks/useInterval";
-import { useToggle } from "./hooks/useToggle";
 import { drawVideo } from "./utils/canvas";
 import { mobileDetect } from "./utils/mobileDetect";
+import { useInterval } from "./hooks/useInterval";
+import { useToggle } from "./hooks/useToggle";
+import { useTemperamentScale } from "./hooks/useTemperamentScale";
+import { getFrequencyFromTemperamentScaleNote } from "./utils/music";
+import { map } from "./utils/math";
 
 const isMobile = mobileDetect().isMobile();
 
@@ -14,9 +17,11 @@ const messages = {
   video: "Viewing camera feed!"
 };
 
-const THRESHOLD = 0.7;
+const THRESHOLD = isMobile ? 0.3 : 0.5;
 
 function App() {
+  const [frequency, getNote] = useTemperamentScale();
+
   const audioContext = useRef();
   const oscillator = useRef();
   const net = useRef();
@@ -68,17 +73,20 @@ function App() {
         );
         if (segmentations && segmentations[0]) {
           const segmentation = segmentations[0];
-          const leftWrist = segmentation.pose.keypoints.find(
-            ({ part }) => part === "leftWrist"
+          const rightWrist = segmentation.pose.keypoints.find(
+            ({ part }) => part === "rightWrist"
           );
-          if (leftWrist.score >= THRESHOLD) {
+          if (rightWrist.score >= THRESHOLD) {
+            const { position } = rightWrist;
+            const note = Math.round(map(position.x > 0 ? position.x : 0, 0, canvasDimensions.width, 0, 88))
             oscillator.current.frequency.setValueAtTime(
-              440,
+              getNote(note),
               audioContext.current.currentTime
             );
+            
           } else {
             oscillator.current.frequency.setValueAtTime(
-              220,
+              frequency,
               audioContext.current.currentTime
             );
           }
@@ -132,7 +140,7 @@ function App() {
         const tmpOscillator = tmpAudioContext.createOscillator();
         tmpOscillator.type = "square";
         tmpOscillator.frequency.setValueAtTime(
-          440,
+          getFrequencyFromTemperamentScaleNote(),
           tmpAudioContext.currentTime
         );
         tmpOscillator.start();
@@ -173,6 +181,7 @@ function App() {
   return (
     <main className="main">
       <h1>Here we go</h1>
+      <p>Note frequency: {frequency}hz</p>
       <p>{videoActive ? messages.video : messages.noVideo}</p>
       <video
         autoPlay
