@@ -5,6 +5,9 @@ import { AudioContext } from "./audio/audioContext";
 import { useInterval } from "./hooks/useInterval";
 import { useToggle } from "./hooks/useToggle";
 import { drawVideo } from "./utils/canvas";
+import { mobileDetect } from "./utils/mobileDetect";
+
+const isMobile = mobileDetect().isMobile();
 
 const messages = {
   noVideo: "No stream is being captured",
@@ -20,6 +23,7 @@ function App() {
   const video = useRef();
   const image = useRef();
   const canvas = useRef();
+
 
   const [trackingLoaded, toggleTrackingLoaded] = useToggle();
   const [trackingActive, toggleTrackingActive] = useToggle();
@@ -105,9 +109,17 @@ function App() {
     navigator.mediaDevices
       .getUserMedia({
         video: {
-          width: { min: 320, ideal: 640, max: 640 },
-          height: { min: 240, ideal: 480, max: 480 },
-          facingMode: { exact: "environment" }
+          width: {
+            min: 160,
+            ideal: isMobile ? 320 : 640,
+            max: 640
+          },
+          height: {
+            min: 120,
+            ideal: isMobile ? 240 : 480,
+            max: 480
+          },
+          facingMode: "environment"
         },
         audio: false
       })
