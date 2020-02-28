@@ -28,6 +28,6 @@ code {
   display: none;
 }
 
-.main__canvas {
+.main__canvas--flip {
   transform: rotateY(180deg);
 }

@@ -24,7 +24,6 @@ function App() {
   const image = useRef();
   const canvas = useRef();
 
-
   const [trackingLoaded, toggleTrackingLoaded] = useToggle();
   const [trackingActive, toggleTrackingActive] = useToggle();
   const [audioActive, toggleAudioActive] = useToggle();
@@ -51,7 +50,9 @@ function App() {
       const imageNode = image.current;
       const model = net.current;
       if (imageNode && imageNode.height && imageNode.width && model) {
-        const segmentations = await model.segmentMultiPersonParts(imageNode);
+        const segmentations = await model.segmentMultiPersonParts(imageNode, {
+          internalResolution: isMobile ? "low" : "medium"
+        });
         const coloredPartImage = bodyPix.toColoredPartMask(segmentations);
         const opacity = 0.7;
         const flipHorizontal = false;
@@ -202,7 +203,7 @@ function App() {
       </button>
       <img className="main__image" ref={image} src={imageSrc} alt="" />
       <canvas
-        className="main__canvas"
+        className={`main__canvas${isMobile ? "" : "--flip"}`}
         ref={canvas}
         height={canvasDimensions.height}
         width={canvasDimensions.width}
