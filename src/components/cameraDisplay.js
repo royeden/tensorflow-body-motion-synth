@@ -3,10 +3,6 @@ import styled, { css } from "styled-components";
 
 import { cameraContext } from "../context/cameraContext";
 
-const flipCanvasMixin = css`
-  transform: rotateY(180deg);
-`;
-
 const hideCanvasMixin = css`
   display: none;
 `;
@@ -36,7 +32,7 @@ const CanvasContainer = styled.div`
 `;
 
 const CanvasCamera = styled.canvas`
-  ${({ isMobile }) => (isMobile ? scaleCanvasMixin : flipCanvasMixin)}
+  ${({ isMobile }) => (isMobile ? scaleCanvasMixin : "")}
   ${({ videoActive }) => (videoActive ? "" : hideCanvasMixin)}
 `;
 
@@ -44,7 +40,7 @@ const FallbackMessage = styled.h1`
   color: #fff;
 `;
 
-function Camera(props) {
+function CameraDisplay(props) {
   const { canvas, isMobile, peopleTracked, videoActive } = useContext(
     cameraContext
   );
@@ -65,4 +61,4 @@ function Camera(props) {
   );
 }
 
-export default Camera;
+export default CameraDisplay;

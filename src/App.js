@@ -1,6 +1,6 @@
 import React from "react";
 
-import Camera from "./components/camera";
+import CameraDisplay from "./components/cameraDisplay";
 import CameraControls from "./components/cameraControls";
 import PeopleControls from "./components/peopleControls";
 import { AudioProvider } from "./context/audioContext";
@@ -12,7 +12,7 @@ function App() {
     <ModelProvider>
       <CameraProvider>
         <AudioProvider>
-          <Camera />
+          <CameraDisplay />
           <CameraControls />
           <PeopleControls />
         </AudioProvider>
