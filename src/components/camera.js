@@ -35,7 +35,7 @@ const CanvasContainer = styled.div`
   ${({ isMobile }) => (isMobile ? mobileCanvasMixin : webCanvasMixin)}
 `;
 
-const CanvasDisplay = styled.canvas`
+const CanvasCamera = styled.canvas`
   ${({ isMobile }) => (isMobile ? scaleCanvasMixin : flipCanvasMixin)}
   ${({ videoActive }) => (videoActive ? "" : hideCanvasMixin)}
 `;
@@ -44,11 +44,11 @@ const FallbackMessage = styled.h1`
   color: #fff;
 `;
 
-function Display(props) {
+function Camera(props) {
   const { canvas, isMobile, videoActive } = useContext(cameraContext);
   return (
     <CanvasContainer>
-      <CanvasDisplay
+      <CanvasCamera
         {...canvas}
         isMobile={isMobile}
         videoActive={videoActive}
@@ -60,4 +60,4 @@ function Display(props) {
   );
 }
 
-export default Display;
+export default Camera;
