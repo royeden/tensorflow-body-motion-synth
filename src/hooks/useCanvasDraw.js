@@ -1,5 +1,5 @@
+import { ANIMATION_FRAMES } from "../constants/animation";
 import { drawImage } from "../utils/canvas";
-import { getFramesPerSecond } from "../utils/animation";
 
 import { useIdleAnimation } from "./useIdleAnimation";
 
@@ -18,7 +18,7 @@ export function useCanvasDraw(
       }
     },
     draw,
-    getFramesPerSecond(55), // This animation should always run slower than the other one
+    ANIMATION_FRAMES,
     forceFallback
   );
 }

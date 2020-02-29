@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useRef, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState
+} from "react";
 import styled from "styled-components";
 
 import { createRefDescription } from "../constants/objects";
@@ -21,6 +27,10 @@ export const cameraContext = createContext({
   videoActive: noOp
 });
 
+const HiddenCanvas = styled.canvas`
+  display: none;
+`;
+
 const HiddenVideo = styled.video`
   display: none;
 `;
@@ -39,17 +49,34 @@ export function CameraProvider({ children }) {
   const [videoActive, toggleVideoActive] = useToggle();
 
   const canvasRef = useRef();
-  const imageRef = useRef();
-  const videoRef = useRef();
+  const hiddenCanvasRef = useRef();
+  const hiddenImageRef = useRef();
+  const hiddenVideoRef = useRef();
 
-  const isMobile = useStream(videoRef);
+  const isMobile = useStream(hiddenVideoRef);
 
-  const [width, height] = useVideoDimensions(videoRef, videoActive);
+  const [width, height] = useVideoDimensions(hiddenVideoRef, videoActive);
 
-  useCanvasDraw(canvasRef.current, videoRef.current, videoActive, setImageSrc);
+  // Cleanup
+  useEffect(() => {
+    if (!videoActive && peopleTracked.length > 0) setPeopleTracked([]);
+  }, [peopleTracked.length, videoActive]);
+
+  useCanvasDraw(
+    hiddenCanvasRef.current,
+    hiddenVideoRef.current,
+    videoActive,
+    setImageSrc
+  );
+  useCanvasDraw(
+    canvasRef.current,
+    hiddenVideoRef.current,
+    !trackingActive && videoActive,
+    setImageSrc
+  );
   useModelDraw(
     canvasRef.current,
-    imageRef.current,
+    hiddenImageRef.current,
     model.current,
     isMobile,
     videoActive && imageSrc && trackingActive,
@@ -60,7 +87,8 @@ export function CameraProvider({ children }) {
       peopleTracked.forEach(({ pose }, id) => {
         if (pose.keypoints && pose.keypoints.length > 0) {
           const nose = pose.keypoints.find(({ part }) => part === "nose");
-          if (nose.score > 0.4) drawText(canvasRef.current, id, nose.position);
+          if (nose.score > 0.4)
+            drawText(canvasRef.current, id + 1, nose.position, !isMobile);
         }
       });
     }
@@ -68,10 +96,15 @@ export function CameraProvider({ children }) {
 
   return (
     <>
-      <HiddenVideo autoPlay onPlayCapture={toggleVideoActive} ref={videoRef}>
+      <HiddenCanvas height={height} width={width} ref={hiddenCanvasRef} />
+      <HiddenImage ref={hiddenImageRef} src={imageSrc} alt="" />
+      <HiddenVideo
+        autoPlay
+        onPlayCapture={toggleVideoActive}
+        ref={hiddenVideoRef}
+      >
         {videoActive ? "Video Active" : "Waiting for stream"}
       </HiddenVideo>
-      <HiddenImage ref={imageRef} src={imageSrc} alt="" />
       <Provider
         value={{
           canvas: { ref: canvasRef, height, width },
