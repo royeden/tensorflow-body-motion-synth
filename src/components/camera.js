@@ -21,8 +21,8 @@ const mobileCanvasMixin = css`
 `;
 
 const webCanvasMixin = css`
-  min-height: 400px;
-  min-width: 400px;
+  min-height: 500px;
+  min-width: 500px;
 `;
 
 const CanvasContainer = styled.div`
