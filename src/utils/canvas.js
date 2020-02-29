@@ -4,6 +4,7 @@ export function drawVideo(canvas, video) {
   return context;
 }
 
-export function getCanvasPixels() {
-
+export function drawImage(canvas, image) {
+  const context = canvas.getContext('2d');
+  context.drawImage(image, 0, 0);
 }
