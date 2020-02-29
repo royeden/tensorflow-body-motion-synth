@@ -8,12 +8,16 @@ export function useCanvasDraw(
   video,
   draw,
   imageCallback,
-  forceFallback
+  options = {
+    flip: false,
+    forceFallback: false
+  }
 ) {
+  const { flip, forceFallback } = options;
   useIdleAnimation(
     () => {
       if (canvas && video && draw) {
-        drawImage(canvas, video);
+        drawImage(canvas, video, flip);
         if (imageCallback) imageCallback(canvas.toDataURL("image/png"));
       }
     },

@@ -13,8 +13,12 @@ export function useModelDraw(
   isMobile,
   draw,
   segmentationsCallback,
-  forceFallback = apiSupported("requestIdleCallback")
+  options = {
+    flip: false,
+    forceFallback: apiSupported("requestIdleCallback")
+  }
 ) {
+  const { flip, forceFallback } = options;
   useAnimation(
     async () => {
       if (canvas && image && draw) {
@@ -24,7 +28,6 @@ export function useModelDraw(
         });
         const coloredPartImage = bodyPix.toColoredPartMask(segmentations);
         const opacity = 0.5;
-        const flipHorizontal = false;
         const maskBlurAmount = 0;
         bodyPix.drawMask(
           canvas,
@@ -32,7 +35,7 @@ export function useModelDraw(
           coloredPartImage,
           opacity,
           maskBlurAmount,
-          flipHorizontal
+          flip
         );
 
         if (segmentationsCallback) segmentationsCallback(segmentations);

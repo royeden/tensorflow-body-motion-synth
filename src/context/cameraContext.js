@@ -66,13 +66,15 @@ export function CameraProvider({ children }) {
     hiddenCanvasRef.current,
     hiddenVideoRef.current,
     videoActive,
-    setImageSrc
+    setImageSrc,
+    { flip: !isMobile }
   );
   useCanvasDraw(
     canvasRef.current,
     hiddenVideoRef.current,
     !trackingActive && videoActive,
-    setImageSrc
+    false,
+    { flip: !isMobile }
   );
   useModelDraw(
     canvasRef.current,
@@ -88,7 +90,7 @@ export function CameraProvider({ children }) {
         if (pose.keypoints && pose.keypoints.length > 0) {
           const nose = pose.keypoints.find(({ part }) => part === "nose");
           if (nose.score > 0.4)
-            drawText(canvasRef.current, id + 1, nose.position, !isMobile);
+            drawText(canvasRef.current, id + 1, nose.position);
         }
       });
     }
