@@ -17,7 +17,7 @@ function PeopleControls(props) {
         ))}
       </select>
       {[...Array(peopleAmount)].map((_, index) => (
-        <SynthControls key={`synth_controls_for_person_${index}`} personId={index} />
+        <SynthControls key={`Synth_controls_for_person_${index}`} personId={index} />
       ))}
     </>
   );
