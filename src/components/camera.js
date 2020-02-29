@@ -21,8 +21,8 @@ const mobileCanvasMixin = css`
 `;
 
 const webCanvasMixin = css`
-  min-height: 480px;
-  min-width: 640px;
+  min-height: 400px;
+  min-width: 400px;
 `;
 
 const CanvasContainer = styled.div`
@@ -45,18 +45,23 @@ const FallbackMessage = styled.h1`
 `;
 
 function Camera(props) {
-  const { canvas, isMobile, videoActive } = useContext(cameraContext);
+  const { canvas, isMobile, peopleTracked, videoActive } = useContext(
+    cameraContext
+  );
   return (
-    <CanvasContainer>
-      <CanvasCamera
-        {...canvas}
-        isMobile={isMobile}
-        videoActive={videoActive}
-      />
-      {!videoActive && (
-        <FallbackMessage>Waiting for stream to start...</FallbackMessage>
-      )}
-    </CanvasContainer>
+    <>
+      <CanvasContainer>
+        <CanvasCamera
+          {...canvas}
+          isMobile={isMobile}
+          videoActive={videoActive}
+        />
+        {!videoActive && (
+          <FallbackMessage>Waiting for stream to start...</FallbackMessage>
+        )}
+      </CanvasContainer>
+      <h1>People: {peopleTracked.length}</h1>
+    </>
   );
 }
 

@@ -10,13 +10,13 @@ export function useStream(videoRef) {
         video: {
           width: {
             min: 160,
-            ideal: isMobile ? 250 : 640,
-            max: 640
+            ideal: isMobile ? 250 : 400,
+            max: 400
           },
           height: {
             min: 120,
-            ideal: isMobile ? 250 : 480,
-            max: 480
+            ideal: isMobile ? 250 : 400,
+            max: 400
           },
           facingMode: "environment"
         },

@@ -11,7 +11,6 @@ function App() {
     <ModelProvider>
       <CameraProvider>
         <AudioProvider>
-          <h1>Test</h1>
           <ConfigurationPanel />
           <Camera />
         </AudioProvider>
