@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useState } from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 
 import { audioContext } from "../context/audioContext";
 import { cameraContext } from "../context/cameraContext";
@@ -10,12 +10,14 @@ import Select from "./select";
 // TODO move select to a component
 // TODO add custom inputs
 
-function Synth({ id, initialFrequency, person, personId }) {
+function Synth({ id, initialFrequency, person, personId, removeSynth }) {
   const { audioContextObject } = useContext(audioContext);
   const { isMobile } = useContext(cameraContext);
   const [synthWaveType, setSynthWaveType] = useState("");
   const [bodyPart, setBodyPart] = useState("");
   const [persist, togglePersist] = useToggle(true);
+
+  const handleRemove = useCallback(() => removeSynth(id), [id, removeSynth]);
 
   const keypoints = person ? person.pose.keypoints : false;
   const trackedBodyPart =
@@ -84,6 +86,7 @@ function Synth({ id, initialFrequency, person, personId }) {
             : "No body part selected"
           : "No person tracked"}
       </p>
+      <button onClick={handleRemove}>Remove this synth</button>
     </div>
   );
 }

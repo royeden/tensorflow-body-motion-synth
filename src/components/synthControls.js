@@ -14,7 +14,7 @@ function SynthControls({ personId }) {
       <h1>Synth Controls for Person {personId + 1}:</h1>
       <button onClick={addSynth}>Add Synth</button>
       {synths.map(id => (
-        <Synth key={id} id={id} person={person} personId={personId} />
+        <Synth key={`Synth_${id}`} id={id} person={person} personId={personId} removeSynth={removeSynth} />
       ))}
     </div>
   );
