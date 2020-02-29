@@ -20,13 +20,12 @@ export function ModelProvider({ children }) {
 
   useEffect(() => {
     if (!trackingActive && !modelLoaded) {
-      toggleModelLoaded();
       async function getModel() {
         model.current = await bodyPix.load();
-
         console.log("Loaded model");
+        toggleModelLoaded();
 
-        toggleTrackingActive();
+        // toggleTrackingActive();
       }
       getModel();
     }
