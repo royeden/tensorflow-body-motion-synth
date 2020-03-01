@@ -1,18 +1,17 @@
-import { useEffect, useRef, useState } from "react";
-
-import { useToggle } from "./useToggle";
+import { useEffect, useRef } from 'react';
 
 export function useOscillator(audioContext, play, frequency, type) {
-  const internalAudioContext = useRef(audioContext);
-  const oscillatorRef = useRef(internalAudioContext.current.createOscillator());
+  const audioContextRef = useRef(audioContext);
+  const oscillatorRef = useRef(audioContextRef.current.createOscillator());
   const frequencyRef = useRef(frequency);
+  const connectedRef = useRef(play);
 
   useEffect(() => {
     if (frequency !== frequencyRef.current) {
       frequencyRef.current = frequency;
       oscillatorRef.current.frequency.setValueAtTime(
         frequency,
-        internalAudioContext.current.currentTime
+        audioContextRef.current.currentTime
       );
     }
   }, [frequency]);
@@ -22,13 +21,26 @@ export function useOscillator(audioContext, play, frequency, type) {
   }, [type]);
 
   useEffect(() => {
-    const context = internalAudioContext.current;
+    const context = audioContextRef.current;
     const oscillator = oscillatorRef.current;
+    if (play !== connectedRef.current) {
+      if (play) {
+        oscillator.connect(context.destination);
+      } else {
+        oscillator.disconnect(context);
+      }
+      connectedRef.current = play;
+    }
+  }, [play]);
+
+  useEffect(() => {
+    const context = audioContextRef.current;
+    const oscillator = oscillatorRef.current;
+    const connected = connectedRef.current;
     oscillator.start();
-    // TODO don't connect automatically;
-    oscillator.connect(context.destination);
+    if (connectedRef.current) oscillator.connect(context.destination);
     return () => {
-      oscillator.disconnect(context);
+      if (connected) oscillator.disconnect(context);
       oscillator.stop();
     };
   }, []);
