@@ -1,4 +1,10 @@
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState
+} from "react";
 
 import { MODEL_PARTS } from "../constants/model";
 import {
@@ -8,7 +14,10 @@ import {
 } from "../constants/music";
 import { audioContext } from "../context/audioContext";
 import { cameraContext } from "../context/cameraContext";
+import { map, mapWithinBoundary } from "../utils/math";
 import { noOp } from "../constants/functions";
+import { useOscillator } from "../hooks/useOscillator";
+import { useTemperamentScale } from "../hooks/useTemperamentScale";
 import { useToggle } from "../hooks/useToggle";
 
 import Select from "./select";
@@ -17,16 +26,21 @@ import Input from "./input";
 const min = 20;
 const max = 20000;
 
-// TODO move select to a component
-// TODO add custom inputs
+// TODO fragment into pieces
 
-function Synth({ id, initialFrequency, person, personId, removeSynth }) {
+function Synth({ id, person, personId, removeSynth }) {
   const { audioContextObject } = useContext(audioContext);
-  const { isMobile } = useContext(cameraContext);
+  const {
+    canvas: { width, height },
+    isMobile
+  } = useContext(cameraContext);
   const [bodyPart, setBodyPart] = useState("");
-  const [frequency, setFrequency] = useState(A4_440.frequency);
+  const [baseFrequency, setBaseFrequency] = useState(A4_440.frequency);
   const [frequencyDirection, setFrequencyDirection] = useState("");
-  const [synthWaveType, setSynthWaveType] = useState("");
+  const [synthWaveType, setSynthWaveType] = useState(SYNTH_WAVE_TYPES[0]);
+  const [frequency, getNote] = useTemperamentScale(A4_440.position);
+  const [persist, togglePersist] = useToggle(false);
+  const [muted, toggleMuted] = useToggle(true);
 
   const validation = useCallback(value => value >= min && value <= max, []);
 
@@ -35,16 +49,50 @@ function Synth({ id, initialFrequency, person, personId, removeSynth }) {
   const keypoints = person ? person.pose.keypoints : false;
   const trackedBodyPart =
     keypoints && bodyPart && keypoints.find(({ part }) => part === bodyPart);
-
-  const frequencyDirectionTransformer = useCallback(
+  const frequencyDirectionTransformer = useMemo(
     () =>
       frequencyDirection
         ? FREQUENCY_DIRECTIONS.find(
             option => option.value === frequencyDirection
-          )
+          ).transformer
         : noOp,
     [frequencyDirection]
   );
+
+  const trackedFrequency = useMemo(
+    () =>
+      trackedBodyPart &&
+      trackedBodyPart.score >= 0.3 &&
+      frequencyDirectionTransformer(trackedBodyPart.position, {
+        width,
+        height
+      }),
+    [frequencyDirectionTransformer, height, trackedBodyPart, width]
+  );
+
+  useEffect(() => {
+    if (trackedFrequency) {
+      const x =
+        trackedFrequency.x && mapWithinBoundary(trackedFrequency.x, 0, width);
+      const y =
+        trackedFrequency.y && mapWithinBoundary(trackedFrequency.y, 0, height);
+      const mappedX = x ? map(x, 0, width, 1, y ? 44 : 88) : 0;
+      const mappedY = y ? map(y, 0, height, 1, x ? 44 : 88) : 0;
+      const note = Math.round(mappedX + mappedY);
+      getNote(note);
+    }
+  }, [getNote, height, trackedFrequency, width]);
+
+  const canPlay =
+    !muted &&
+    (persist ||
+      (trackedBodyPart &&
+        frequencyDirection &&
+        synthWaveType &&
+        trackedFrequency &&
+        frequency));
+
+  useOscillator(audioContextObject.current, canPlay, frequency, synthWaveType);
 
   const frequencyDirectionOptions = useMemo(
     () =>
@@ -89,7 +137,6 @@ function Synth({ id, initialFrequency, person, personId, removeSynth }) {
       <Select
         onChange={event => setSynthWaveType(event.target.value)}
         options={synthOptions}
-        placeholder="Choose an option"
       />
       <Select
         onChange={event => setFrequencyDirection(event.target.value)}
@@ -107,8 +154,18 @@ function Synth({ id, initialFrequency, person, personId, removeSynth }) {
         name="frequency"
         type="number"
         validation={validation}
-        onChange={setFrequency}
-        value={frequency}
+        onChange={value => setBaseFrequency(parseInt(value, 10))}
+        value={baseFrequency}
+      />
+      <label htmlFor={`Synth_${personId}_${id}_persist`}>
+        Persist when tracking stops:
+      </label>
+      <Input
+        id={`Synth_${personId}_${id}_persist`}
+        defaultValue={persist}
+        checked={persist}
+        type="checkbox"
+        onChange={togglePersist}
       />
       {/* Todo remove these, they're for debugging */}
       <p>
@@ -132,6 +189,7 @@ function Synth({ id, initialFrequency, person, personId, removeSynth }) {
         {frequencyDirection || "no frequency direction selected"}
       </p>
       <p>Synth Type: {synthWaveType || "no type selected"}</p>
+      <button onClick={toggleMuted}>Toggle {muted && "un"}mute</button>
       <button onClick={handleRemove}>Remove this synth</button>
     </div>
   );
