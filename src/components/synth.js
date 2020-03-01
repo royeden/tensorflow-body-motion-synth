@@ -9,11 +9,13 @@ import React, {
 import { MODEL_PARTS } from "../constants/model";
 import {
   A4_440,
+  BASE_TET,
   FREQUENCY_DIRECTIONS,
   SYNTH_WAVE_TYPES
 } from "../constants/music";
 import { audioContext } from "../context/audioContext";
 import { cameraContext } from "../context/cameraContext";
+import { modelContext } from "../context/modelContext";
 import { map, mapWithinBoundary } from "../utils/math";
 import { noOp } from "../constants/functions";
 import { useOscillator } from "../hooks/useOscillator";
@@ -34,16 +36,26 @@ function Synth({ id, person, personId, removeSynth }) {
     canvas: { width, height },
     isMobile
   } = useContext(cameraContext);
+  const { trackingActive } = useContext(modelContext);
   const [bodyPart, setBodyPart] = useState("");
   const [baseFrequency, setBaseFrequency] = useState(A4_440.frequency);
   const [frequencyDirection, setFrequencyDirection] = useState("");
   const [synthWaveType, setSynthWaveType] = useState(SYNTH_WAVE_TYPES[0]);
-  const [frequency, setFrequency, getNote] = useTemperamentScale(A4_440.position, { baseNoteFrequency: baseFrequency });
+  const [tet, setTet] = useState(BASE_TET);
+  const [
+    frequency,
+    setFrequency,
+    getNote
+  ] = useTemperamentScale(A4_440.position, {
+    baseNoteFrequency: baseFrequency,
+    tet
+  });
   const [persist, togglePersist] = useToggle(true);
   const [muted, toggleMuted] = useToggle(true);
   const [resetSynthOnUpdate, toggleResetSynthOnUpdate] = useToggle(true);
 
   const validation = useCallback(value => value >= min && value <= max, []);
+  const tetValidation = useCallback(value => value >= 2 && value <= 24, []);
 
   const handleRemove = useCallback(() => removeSynth(id), [id, removeSynth]);
 
@@ -87,7 +99,8 @@ function Synth({ id, person, personId, removeSynth }) {
   const canPlay =
     !muted &&
     (persist ||
-      (trackedBodyPart &&
+      (trackingActive &&
+        trackedBodyPart &&
         frequencyDirection &&
         synthWaveType &&
         trackedFrequency &&
@@ -182,6 +195,16 @@ function Synth({ id, person, personId, removeSynth }) {
         type="checkbox"
         onChange={toggleResetSynthOnUpdate}
       />
+      <label htmlFor={`Synth_${personId}_${id}_tet`}>
+        Tet:
+      </label>
+      <Input
+        id={`Synth_${personId}_${id}_tet`}
+        defaultValue={tet}
+        type="number"
+        validation={tetValidation}
+        onChange={value => setTet(parseInt(value, 10))}
+      />
       {/* Todo remove these, they're for debugging */}
       <p>
         Position:{" "}
@@ -199,10 +222,7 @@ function Synth({ id, person, personId, removeSynth }) {
             : "No body part selected"
           : "No person tracked"}
       </p>
-      <p>
-        Frequency :{" "}
-        {frequency}
-      </p>
+      <p>Frequency : {frequency}</p>
       <p>
         Frequency Direction:{" "}
         {frequencyDirection || "no frequency direction selected"}
