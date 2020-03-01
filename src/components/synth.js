@@ -38,9 +38,10 @@ function Synth({ id, person, personId, removeSynth }) {
   const [baseFrequency, setBaseFrequency] = useState(A4_440.frequency);
   const [frequencyDirection, setFrequencyDirection] = useState("");
   const [synthWaveType, setSynthWaveType] = useState(SYNTH_WAVE_TYPES[0]);
-  const [frequency, getNote] = useTemperamentScale(A4_440.position);
-  const [persist, togglePersist] = useToggle(false);
+  const [frequency, setFrequency, getNote] = useTemperamentScale(A4_440.position, { baseNoteFrequency: baseFrequency });
+  const [persist, togglePersist] = useToggle(true);
   const [muted, toggleMuted] = useToggle(true);
+  const [resetSynthOnUpdate, toggleResetSynthOnUpdate] = useToggle(false);
 
   const validation = useCallback(value => value >= min && value <= max, []);
 
@@ -147,14 +148,18 @@ function Synth({ id, person, personId, removeSynth }) {
         Base Frequency
       </label>
       <Input
-        defaultValue={A4_440.frequency}
+        defaultValue={baseFrequency}
         min={min}
         max={max}
         id={`Synth_${personId}_${id}_frequency`}
         name="frequency"
         type="number"
         validation={validation}
-        onChange={value => setBaseFrequency(parseInt(value, 10))}
+        onChange={value => {
+          const parsedValue = parseInt(value, 10);
+          setBaseFrequency(parsedValue);
+          if (resetSynthOnUpdate) setFrequency(parsedValue);
+        }}
         value={baseFrequency}
       />
       <label htmlFor={`Synth_${personId}_${id}_persist`}>
@@ -166,6 +171,16 @@ function Synth({ id, person, personId, removeSynth }) {
         checked={persist}
         type="checkbox"
         onChange={togglePersist}
+      />
+      <label htmlFor={`Synth_${personId}_${id}_reset_synth_on_update`}>
+        Reset synth on update:
+      </label>
+      <Input
+        id={`Synth_${personId}_${id}_reset_synth_on_update`}
+        defaultValue={resetSynthOnUpdate}
+        checked={resetSynthOnUpdate}
+        type="checkbox"
+        onChange={toggleResetSynthOnUpdate}
       />
       {/* Todo remove these, they're for debugging */}
       <p>
@@ -185,10 +200,15 @@ function Synth({ id, person, personId, removeSynth }) {
           : "No person tracked"}
       </p>
       <p>
+        Frequency :{" "}
+        {frequency}
+      </p>
+      <p>
         Frequency Direction:{" "}
         {frequencyDirection || "no frequency direction selected"}
       </p>
       <p>Synth Type: {synthWaveType || "no type selected"}</p>
+      <button onClick={() => setFrequency(baseFrequency)}>Reset synth</button>
       <button onClick={toggleMuted}>Toggle {muted && "un"}mute</button>
       <button onClick={handleRemove}>Remove this synth</button>
     </div>
