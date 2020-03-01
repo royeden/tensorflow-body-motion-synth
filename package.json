@@ -10,16 +10,30 @@
     "@testing-library/user-event": "^7.1.2",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
-    "react-scripts": "3.4.0"
+    "react-scripts": "3.4.0",
+    "styled-components": "^5.0.1"
   },
   "scripts": {
-    "start": "HTTPS=true react-scripts start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": "react-app"
+  },
+  "babel": {
+    "presets": [
+      "react-app"
+    ],
+    "plugins": [
+      [
+        "babel-plugin-styled-components",
+        {
+          "ssr": false
+        }
+      ]
+    ]
   },
   "browserslist": {
     "production": [
@@ -32,5 +46,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "babel-plugin-styled-components": "^1.10.7"
   }
 }
