@@ -41,7 +41,7 @@ function Synth({ id, person, personId, removeSynth }) {
   const [frequency, setFrequency, getNote] = useTemperamentScale(A4_440.position, { baseNoteFrequency: baseFrequency });
   const [persist, togglePersist] = useToggle(true);
   const [muted, toggleMuted] = useToggle(true);
-  const [resetSynthOnUpdate, toggleResetSynthOnUpdate] = useToggle(false);
+  const [resetSynthOnUpdate, toggleResetSynthOnUpdate] = useToggle(true);
 
   const validation = useCallback(value => value >= min && value <= max, []);
 
@@ -156,7 +156,7 @@ function Synth({ id, person, personId, removeSynth }) {
         type="number"
         validation={validation}
         onChange={value => {
-          const parsedValue = parseInt(value, 10);
+          const parsedValue = parseFloat(value, 10);
           setBaseFrequency(parsedValue);
           if (resetSynthOnUpdate) setFrequency(parsedValue);
         }}
