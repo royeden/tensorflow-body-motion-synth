@@ -8,6 +8,8 @@ export const SYNTH_WAVE_TYPES = [
   "triangle",
   "custom"
 ];
+export const FREQUENCY_LIMITS = { min: 20, max: 20000 };
+export const TET_LIMITS = { min: 2, max: 24 };
 
 const transformHorizontal = ({ x }, { width }, inverted = false) => ({
   x: inverted ? width - x : x

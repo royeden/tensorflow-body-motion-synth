@@ -11,7 +11,9 @@ import {
   A4_440,
   BASE_TET,
   FREQUENCY_DIRECTIONS,
-  SYNTH_WAVE_TYPES
+  SYNTH_WAVE_TYPES,
+  FREQUENCY_LIMITS,
+  TET_LIMITS
 } from "../constants/music";
 import { audioContext } from "../context/audioContext";
 import { cameraContext } from "../context/cameraContext";
@@ -24,9 +26,6 @@ import { useToggle } from "../hooks/useToggle";
 
 import Select from "./select";
 import Input from "./input";
-
-const min = 20;
-const max = 20000;
 
 // TODO fragment into pieces
 
@@ -42,20 +41,25 @@ function Synth({ id, person, personId, removeSynth }) {
   const [frequencyDirection, setFrequencyDirection] = useState("");
   const [synthWaveType, setSynthWaveType] = useState(SYNTH_WAVE_TYPES[0]);
   const [tet, setTet] = useState(BASE_TET);
-  const [
-    frequency,
-    setFrequency,
-    getNote
-  ] = useTemperamentScale(A4_440.position, {
-    baseNoteFrequency: baseFrequency,
-    tet
-  });
+  const [frequency, setFrequency, getNote] = useTemperamentScale(
+    A4_440.position,
+    {
+      baseNoteFrequency: baseFrequency,
+      tet
+    }
+  );
   const [persist, togglePersist] = useToggle(true);
   const [muted, toggleMuted] = useToggle(true);
   const [resetSynthOnUpdate, toggleResetSynthOnUpdate] = useToggle(true);
 
-  const validation = useCallback(value => value >= min && value <= max, []);
-  const tetValidation = useCallback(value => value >= 2 && value <= 24, []);
+  const validation = useCallback(
+    value => value >= FREQUENCY_LIMITS.min && value <= FREQUENCY_LIMITS.max,
+    []
+  );
+  const tetValidation = useCallback(
+    value => value >= TET_LIMITS.min && value <= TET_LIMITS.max,
+    []
+  );
 
   const handleRemove = useCallback(() => removeSynth(id), [id, removeSynth]);
 
@@ -162,8 +166,8 @@ function Synth({ id, person, personId, removeSynth }) {
       </label>
       <Input
         defaultValue={baseFrequency}
-        min={min}
-        max={max}
+        min={FREQUENCY_LIMITS.min}
+        max={FREQUENCY_LIMITS.max}
         id={`Synth_${personId}_${id}_frequency`}
         name="frequency"
         type="number"
@@ -195,9 +199,7 @@ function Synth({ id, person, personId, removeSynth }) {
         type="checkbox"
         onChange={toggleResetSynthOnUpdate}
       />
-      <label htmlFor={`Synth_${personId}_${id}_tet`}>
-        Tet:
-      </label>
+      <label htmlFor={`Synth_${personId}_${id}_tet`}>Tet:</label>
       <Input
         id={`Synth_${personId}_${id}_tet`}
         defaultValue={tet}

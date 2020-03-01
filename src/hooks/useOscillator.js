@@ -1,6 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
-import { mapWithinBoundary } from '../utils/math';
+import { mapWithinBoundary } from "../utils/math";
+import { FREQUENCY_LIMITS } from "../constants/music";
 
 export function useOscillator(audioContext, play, frequency, type) {
   const audioContextRef = useRef(audioContext);
@@ -12,7 +13,11 @@ export function useOscillator(audioContext, play, frequency, type) {
     if (frequency !== frequencyRef.current) {
       frequencyRef.current = frequency;
       oscillatorRef.current.frequency.setValueAtTime(
-        mapWithinBoundary(frequency, 20, 22050),
+        mapWithinBoundary(
+          frequency,
+          FREQUENCY_LIMITS.min,
+          FREQUENCY_LIMITS.max
+        ),
         audioContextRef.current.currentTime
       );
     }
