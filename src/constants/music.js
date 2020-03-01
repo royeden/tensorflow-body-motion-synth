@@ -24,7 +24,7 @@ const transformLinear = (
   ...transformVertical(coordinates, canvas, invertedVertical)
 });
 
-export const FREQUENCY_MAPPING_DIRECTION = [
+export const FREQUENCY_DIRECTIONS = [
   {
     label: "X-axis (horizontal: left-right)",
     value: "horizontal",
@@ -55,7 +55,7 @@ export const FREQUENCY_MAPPING_DIRECTION = [
   },
   {
     label: "X-axis-inverted, Y-axis-inverted (linear: right-right, bottom-top)",
-    value: "linear",
+    value: "linear_inverted",
     transformer: (coordinates, canvas) =>
       transformLinear(coordinates, canvas, {
         invertedHorizontal: true,
