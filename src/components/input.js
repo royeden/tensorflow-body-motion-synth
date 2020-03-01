@@ -5,6 +5,7 @@ function Input({
   errorMessage = "Error",
   onChange,
   onError,
+  onBlur,
   onFocus,
   validation,
   ...props
@@ -24,6 +25,10 @@ function Input({
             if (onError) onError(value);
             setError(true);
           }
+        }}
+        onBlur={event => {
+          if (onBlur) onBlur(event);
+          if (error) setInputValue(defaultValue);
         }}
         onFocus={event => {
           if (onFocus) onFocus(event);
