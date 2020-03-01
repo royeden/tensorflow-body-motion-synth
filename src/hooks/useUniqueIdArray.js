@@ -6,5 +6,6 @@ export function useUniqueIdArray() {
     setState(prevState => [...prevState, Date.now().toString()]);
   const remove = removeId =>
     setState(prevState => [...prevState].filter(id => id !== removeId));
-  return [state, add, remove];
+  const clear = () => setState([])
+  return [state, add, remove, clear];
 }
