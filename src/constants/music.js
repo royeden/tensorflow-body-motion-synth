@@ -1,3 +1,4 @@
+// https://pages.mtu.edu/~suits/notefreqs.html
 export const A4_440 = { position: 49, frequency: 440 };
 export const SYNTH_WAVE_TYPES = [
   "square",
@@ -18,10 +19,10 @@ const transformVertical = ({ y }, { height }, inverted = false) => ({
 const transformLinear = (
   coordinates,
   canvas,
-  { invertedHorizontal = false, invertedVertical = false }
+  config = { invertedHorizontal: false, invertedVertical: false }
 ) => ({
-  ...transformHorizontal(coordinates, canvas, invertedHorizontal),
-  ...transformVertical(coordinates, canvas, invertedVertical)
+  ...transformHorizontal(coordinates, canvas, config.invertedHorizontal),
+  ...transformVertical(coordinates, canvas, config.invertedVertical)
 });
 
 export const FREQUENCY_DIRECTIONS = [
