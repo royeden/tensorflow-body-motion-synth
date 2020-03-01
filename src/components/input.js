@@ -17,7 +17,7 @@ function Input({
         {...props}
         onChange={({ target: { value } }) => {
           setInputValue(value);
-          if (validation(value)) {
+          if (!validation || (validation && validation(value))) {
             if (onChange) onChange(value);
             if (error) setError(false);
           } else {
