@@ -48,8 +48,9 @@ function Synth({ id, person, personId, removeSynth }) {
       tet
     }
   );
-  const [persist, togglePersist] = useToggle(true);
+  const [roundPosition, toggleRoundPosition] = useToggle(true);
   const [muted, toggleMuted] = useToggle(true);
+  const [persist, togglePersist] = useToggle(true);
   const [resetSynthOnUpdate, toggleResetSynthOnUpdate] = useToggle(true);
 
   const validation = useCallback(
@@ -80,11 +81,25 @@ function Synth({ id, person, personId, removeSynth }) {
     () =>
       trackedBodyPart &&
       trackedBodyPart.score >= 0.3 &&
-      frequencyDirectionTransformer(trackedBodyPart.position, {
-        width,
-        height
-      }),
-    [frequencyDirectionTransformer, height, trackedBodyPart, width]
+      frequencyDirectionTransformer(
+        roundPosition
+          ? {
+              x: Math.round(trackedBodyPart.position.x),
+              y: Math.round(trackedBodyPart.position.y)
+            }
+          : trackedBodyPart.position,
+        {
+          width,
+          height
+        }
+      ),
+    [
+      frequencyDirectionTransformer,
+      height,
+      roundPosition,
+      trackedBodyPart,
+      width
+    ]
   );
 
   useEffect(() => {
@@ -199,6 +214,16 @@ function Synth({ id, person, personId, removeSynth }) {
         type="checkbox"
         onChange={toggleResetSynthOnUpdate}
       />
+      <label htmlFor={`Synth_${personId}_${id}_round_position`}>
+        Round position:
+      </label>
+      <Input
+        id={`Synth_${personId}_${id}_round_position`}
+        defaultValue={roundPosition}
+        checked={roundPosition}
+        type="checkbox"
+        onChange={toggleRoundPosition}
+      />
       <label htmlFor={`Synth_${personId}_${id}_tet`}>Tet:</label>
       <Input
         id={`Synth_${personId}_${id}_tet`}
@@ -212,7 +237,15 @@ function Synth({ id, person, personId, removeSynth }) {
         Position:{" "}
         {keypoints
           ? bodyPart
-            ? `[ x: ${trackedBodyPart.position.x}, y: ${trackedBodyPart.position.y} ]`
+            ? `[ x: ${
+                roundPosition
+                  ? Math.round(trackedBodyPart.position.x)
+                  : trackedBodyPart.position.x
+              }, y: ${
+                roundPosition
+                  ? Math.round(trackedBodyPart.position.y)
+                  : trackedBodyPart.position.y
+              } ]`
             : "No body part selected"
           : "No person tracked"}
       </p>
