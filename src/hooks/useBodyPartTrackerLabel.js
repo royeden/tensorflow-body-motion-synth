@@ -1,18 +1,20 @@
 import { useCallback } from "react";
 
+import { ANIMATION_FRAMES } from "../constants/animation";
+import { IS_MOBILE } from "../utils/mobileDetect";
 import { drawText } from "../utils/canvas";
 import { noOp } from "../constants/functions";
 
 import useAnimations from "./useAnimations";
-import { IS_MOBILE } from "../utils/mobileDetect";
 
 function useBodyPartTracker(
   canvas,
   run,
   {
     bodyPart = "nose",
+    fallbackTimeout = ANIMATION_FRAMES,
     forceFallback = false,
-    optimize = IS_MOBILE,
+    optimizePerformance = IS_MOBILE,
     peopleTracked = [],
     text = noOp,
     threshold = 0.4
@@ -31,7 +33,11 @@ function useBodyPartTracker(
       });
     }
   }, [bodyPart, canvas, peopleTracked, text, threshold]);
-  useAnimations(callback, run, { forceFallback, optimize });
+  useAnimations(callback, run, {
+    fallbackTimeout,
+    forceFallback,
+    optimizePerformance
+  });
 }
 
 export default useBodyPartTracker;

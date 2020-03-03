@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import * as bodyPix from "@tensorflow-models/body-pix";
 
+import { ANIMATION_FRAMES } from "../constants/animation";
 import { IS_MOBILE } from "../utils/mobileDetect";
 
 import useAnimations from "./useAnimations";
@@ -45,11 +46,12 @@ function useModelDraw(
   run,
   segmentationsCallback,
   {
-    lowRes = IS_MOBILE,
+    fallbackTimeout = ANIMATION_FRAMES,
     flip = false,
     forceFallback = false,
+    lowRes = IS_MOBILE,
     opacity = 0.5,
-    optimize = IS_MOBILE
+    optimizePerformance = IS_MOBILE
   }
 ) {
   const callback = useCallback(async () => {
@@ -76,7 +78,11 @@ function useModelDraw(
       if (segmentationsCallback) segmentationsCallback(segmentations);
     }
   }, [canvas, flip, image, lowRes, model, opacity, segmentationsCallback]);
-  useAnimations(callback, run, { forceFallback, optimize });
+  useAnimations(callback, run, {
+    fallbackTimeout,
+    forceFallback,
+    optimizePerformance
+  });
 }
 
 export default useModelDraw;

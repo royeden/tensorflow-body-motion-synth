@@ -4,7 +4,7 @@
 // Thanks https://css-tricks.com/using-requestanimationframe-with-react-hooks/
 
 // This should be the best of both worlds, but it's still pretty messy
-// REQUEST IDLE CALLBACK IS EXPERIMENTAL, works but delays everything on optimize
+// REQUEST IDLE CALLBACK IS EXPERIMENTAL, works but delays everything on optimizePerformance
 
 import { useEffect, useMemo, useRef } from "react";
 
@@ -22,7 +22,7 @@ function useAnimations(
   {
     fallbackTimeout = ANIMATION_FRAMES, // this is used in cases where we need to configure the interval fps
     forceFallback = false,
-    optimize = false
+    optimizePerformance = false
    }
 ) {
   const savedCallback = useRef();
@@ -30,13 +30,13 @@ function useAnimations(
   const shouldFallback = useMemo(
     () =>
       forceFallback ||
-      (!optimize && canUseRequestAnimationFrame) ||
-      (optimize && canUseRequestIdleCallback),
-    [forceFallback, optimize]
+      (!optimizePerformance && canUseRequestAnimationFrame) ||
+      (optimizePerformance && canUseRequestIdleCallback),
+    [forceFallback, optimizePerformance]
   );
 
   const previousIteration = useRef({
-    optimize,
+    optimizePerformance,
     shouldFallback
   });
 
@@ -51,7 +51,7 @@ function useAnimations(
     function tick() {
       savedCallback.current();
       if (!shouldFallback) {
-        savedId = optimize
+        savedId = optimizePerformance
           ? requestIdleCallback(tick, idleCallbackOptions)
           : requestAnimationFrame(tick);
       }
@@ -60,33 +60,33 @@ function useAnimations(
       const previous = previousIteration.current;
       if (
         previous.shouldFallback !== shouldFallback ||
-        (previous.optimize !== optimize &&
+        (previous.optimizePerformance !== optimizePerformance &&
           (canUseRequestAnimationFrame || canUseRequestIdleCallback))
       ) {
         if (!previous.shouldFallback && shouldFallback) {
-          if (previous.optimize) cancelIdleCallback(savedId);
+          if (previous.optimizePerformance) cancelIdleCallback(savedId);
           else cancelAnimationFrame(savedId);
         } else {
           if (previous.shouldFallback) clearInterval(savedId);
-          if (!previous.optimize && optimize) cancelAnimationFrame(savedId);
+          if (!previous.optimizePerformance && optimizePerformance) cancelAnimationFrame(savedId);
           else cancelIdleCallback(savedId);
         }
         previous.forceFallback = forceFallback;
-        previous.optimize = optimize;
+        previous.optimizePerformance = optimizePerformance;
       }
       savedId = shouldFallback
         ? setInterval(tick, fallbackTimeout)
-        : optimize
+        : optimizePerformance
         ? requestIdleCallback(tick, idleCallbackOptions)
         : requestAnimationFrame(tick);
       return () =>
         shouldFallback
           ? clearInterval(savedId)
-          : optimize
+          : optimizePerformance
           ? cancelIdleCallback(savedId)
           : cancelAnimationFrame(savedId);
     }
-  }, [fallbackTimeout, forceFallback, optimize, run, shouldFallback]);
+  }, [fallbackTimeout, forceFallback, optimizePerformance, run, shouldFallback]);
 }
 
 export default useAnimations;
