@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import styled, { css } from "styled-components";
 
+import { IS_MOBILE } from "../utils/mobileDetect";
 import { cameraContext } from "../context/cameraContext";
 
 const hideCanvasMixin = css`
@@ -28,11 +29,11 @@ const CanvasContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   max-width: 100vw;
-  ${({ isMobile }) => (isMobile ? mobileCanvasMixin : webCanvasMixin)}
+  ${IS_MOBILE ? mobileCanvasMixin : webCanvasMixin}
 `;
 
 const CanvasCamera = styled.canvas`
-  ${({ isMobile }) => (isMobile ? scaleCanvasMixin : "")}
+  ${IS_MOBILE ? scaleCanvasMixin : ""}
   ${({ videoActive }) => (videoActive ? "" : hideCanvasMixin)}
 `;
 
@@ -40,8 +41,8 @@ const FallbackMessage = styled.h1`
   color: #fff;
 `;
 
-function CameraDisplay(props) {
-  const { canvas, isMobile, peopleTracked, videoActive } = useContext(
+function CameraDisplay() {
+  const { canvas, peopleTracked, videoActive } = useContext(
     cameraContext
   );
   return (
@@ -49,7 +50,6 @@ function CameraDisplay(props) {
       <CanvasContainer>
         <CanvasCamera
           {...canvas}
-          isMobile={isMobile}
           videoActive={videoActive}
         />
         {!videoActive && (
