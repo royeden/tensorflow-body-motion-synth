@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import { A4_440 } from "../constants/music";
 import { getFrequencyFromTemperamentScaleNote } from "../utils/music";
 
-export function useTemperamentScale(
+function useTemperamentScale(
   initialNotePosition = A4_440.position,
   {
     baseNoteFrequency = A4_440.frequency,
@@ -54,3 +54,5 @@ export function useTemperamentScale(
 
   return [frequency, setFrequency, getNote];
 }
+
+export default useTemperamentScale;

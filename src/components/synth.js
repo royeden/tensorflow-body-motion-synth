@@ -6,35 +6,33 @@ import React, {
   useState
 } from "react";
 
-import { MODEL_PARTS } from "../constants/model";
 import {
   A4_440,
   BASE_TET,
   FREQUENCY_DIRECTIONS,
-  SYNTH_WAVE_TYPES,
   FREQUENCY_LIMITS,
+  SYNTH_WAVE_TYPES,
   TET_LIMITS
 } from "../constants/music";
+import { MODEL_PARTS } from "../constants/model";
+import { IS_MOBILE } from "../utils/mobileDetect";
 import { audioContext } from "../context/audioContext";
 import { cameraContext } from "../context/cameraContext";
 import { modelContext } from "../context/modelContext";
 import { map, mapWithinBoundary } from "../utils/math";
 import { noOp } from "../constants/functions";
-import { useOscillator } from "../hooks/useOscillator";
-import { useTemperamentScale } from "../hooks/useTemperamentScale";
-import { useToggle } from "../hooks/useToggle";
+import useOscillator from "../hooks/useOscillator";
+import useTemperamentScale from "../hooks/useTemperamentScale";
+import useToggle from "../hooks/useToggle";
 
-import Select from "./select";
 import Input from "./input";
+import Select from "./select";
 
 // TODO fragment into pieces
 
 function Synth({ id, person, personId, removeSynth }) {
   const { audioContextObject } = useContext(audioContext);
-  const {
-    canvas: { width, height },
-    isMobile
-  } = useContext(cameraContext);
+  const { canvas: { width, height } } = useContext(cameraContext);
   const { trackingActive } = useContext(modelContext);
   const [bodyPart, setBodyPart] = useState("");
   const [baseFrequency, setBaseFrequency] = useState(A4_440.frequency);
@@ -141,9 +139,9 @@ function Synth({ id, person, personId, removeSynth }) {
       MODEL_PARTS.map(({ label, value }) => ({
         key: `Synth_${personId}_${id}_model_${label}`,
         label,
-        value: value(!isMobile)
+        value: value(!IS_MOBILE)
       })),
-    [id, isMobile, personId]
+    [id, personId]
   );
 
   const synthOptions = useMemo(

@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 import { mapWithinBoundary } from "../utils/math";
 import { FREQUENCY_LIMITS } from "../constants/music";
 
-export function useOscillator(audioContext, play, frequency, type) {
+function useOscillator(audioContext, play, frequency, type) {
   const audioContextRef = useRef(audioContext);
   const oscillatorRef = useRef(audioContextRef.current.createOscillator());
   const frequencyRef = useRef(frequency);
@@ -52,3 +52,5 @@ export function useOscillator(audioContext, play, frequency, type) {
     };
   }, []);
 }
+
+export default useOscillator;

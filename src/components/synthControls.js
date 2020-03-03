@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 
 import { cameraContext } from "../context/cameraContext";
-import { useUniqueIdArray } from "../hooks/useUniqueIdArray";
+import useUniqueIdArray from "../hooks/useUniqueIdArray";
 
 import Synth from "./synth";
 

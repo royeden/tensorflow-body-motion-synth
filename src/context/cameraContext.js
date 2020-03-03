@@ -1,5 +1,6 @@
 import React, {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useRef,
@@ -9,19 +10,17 @@ import styled from "styled-components";
 
 import { createRefDescription } from "../constants/objects";
 import { noOp } from "../constants/functions";
-import { drawText } from "../utils/canvas";
-import { useCanvasDraw } from "../hooks/useCanvasDraw";
-import { useAnimation } from "../hooks/useAnimation";
-import { useModelDraw } from "../hooks/useModelDraw";
-import { useStream } from "../hooks/useStream";
-import { useToggle } from "../hooks/useToggle";
-import { useVideoDimensions } from "../hooks/useVideoDimensions";
+import useBodyPartTracker from "../hooks/useBodyPartTrackerLabel";
+import useCanvasDraw from "../hooks/useCanvasDraw";
+import useModelDraw from "../hooks/useModelDraw";
+import useStream from "../hooks/useStream";
+import useToggle from "../hooks/useToggle";
+import useVideoDimensions from "../hooks/useVideoDimensions";
 
 import { modelContext } from "./modelContext";
 
 export const cameraContext = createContext({
   canvas: { ref: createRefDescription(), height: 0, width: 0 },
-  isMobile: false,
   peopleTracked: [],
   toggleVideoActive: noOp,
   videoActive: noOp
@@ -42,7 +41,7 @@ const HiddenImage = styled.img`
 const { Provider } = cameraContext;
 
 export function CameraProvider({ children }) {
-  const { model, trackingActive } = useContext(modelContext);
+  const { model, modelOpacity, trackingActive } = useContext(modelContext);
 
   const [imageSrc, setImageSrc] = useState("");
   const [peopleTracked, setPeopleTracked] = useState([]);
@@ -53,7 +52,9 @@ export function CameraProvider({ children }) {
   const hiddenImageRef = useRef();
   const hiddenVideoRef = useRef();
 
-  const isMobile = useStream(hiddenVideoRef);
+  const drawTrackedId = useCallback(({ id }) => id + 1, []);
+
+  useStream(hiddenVideoRef);
 
   const [width, height] = useVideoDimensions(hiddenVideoRef, videoActive);
 
@@ -67,34 +68,31 @@ export function CameraProvider({ children }) {
     hiddenVideoRef.current,
     videoActive,
     setImageSrc,
-    { flip: !isMobile }
+    {}
   );
   useCanvasDraw(
     canvasRef.current,
     hiddenVideoRef.current,
     !trackingActive && videoActive,
     false,
-    { flip: !isMobile }
+    {}
   );
   useModelDraw(
     canvasRef.current,
     hiddenImageRef.current,
     model.current,
-    isMobile,
     videoActive && imageSrc && trackingActive,
-    setPeopleTracked
+    setPeopleTracked,
+    { opacity: modelOpacity }
   );
-  useAnimation(() => {
-    if (peopleTracked.length > 0) {
-      peopleTracked.forEach(({ pose }, id) => {
-        if (pose.keypoints && pose.keypoints.length > 0) {
-          const nose = pose.keypoints.find(({ part }) => part === "nose");
-          if (nose.score > 0.4)
-            drawText(canvasRef.current, id + 1, nose.position);
-        }
-      });
+  useBodyPartTracker(
+    canvasRef.current,
+    videoActive && imageSrc && trackingActive,
+    {
+      peopleTracked,
+      text: drawTrackedId
     }
-  }, videoActive && imageSrc && trackingActive);
+  );
 
   return (
     <>
@@ -110,7 +108,6 @@ export function CameraProvider({ children }) {
       <Provider
         value={{
           canvas: { ref: canvasRef, height, width },
-          isMobile,
           peopleTracked,
           toggleVideoActive,
           videoActive

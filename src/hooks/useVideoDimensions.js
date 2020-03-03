@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useState } from "react";
 
-export function useVideoDimensions(videoRef, videoActive) {
+function useVideoDimensions(videoRef, videoActive) {
   const [{ height, width }, setVideoDimensions] = useState({
     height: 0,
     width: 0
@@ -20,3 +20,5 @@ export function useVideoDimensions(videoRef, videoActive) {
 
   return [width, height];
 }
+
+export default useVideoDimensions;

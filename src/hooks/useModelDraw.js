@@ -1,48 +1,82 @@
+import { useCallback } from "react";
 import * as bodyPix from "@tensorflow-models/body-pix";
 
-import { ANIMATION_FRAMES } from "../constants/animation";
-import { apiSupported } from "../utils/apiSupported";
+import { IS_MOBILE } from "../utils/mobileDetect";
 
-// If you wish for an optimized version, use idle callbacks instead
-import { useAnimation } from "./useAnimation";
+import useAnimations from "./useAnimations";
 
-export function useModelDraw(
+const MODEL_COLORS = [
+  /* Right head, left head, right arm top-right, right arm top-left */
+  [255, 0, 0],
+  [0, 255, 0],
+  [255, 0, 0],
+  [0, 255, 255],
+  /* Left arm top-left, left arm top-right, right arm bottom-right, right arm bottom-left */
+  [0, 255, 0],
+  [0, 0, 255],
+  [0, 255, 255],
+  [255, 0, 0],
+  /* Left arm bottom-left, left arm bottom-right, right hand, left Hand */
+  [0, 0, 255],
+  [0, 255, 0],
+  [255, 127, 0],
+  [255, 0, 255],
+  /* Torso front, torso back, right leg top-front, right leg top-back */
+  [255, 255, 0],
+  [127, 0, 127],
+  [0, 255, 255],
+  [255, 0, 0],
+  /* Left leg top-front, left leg top-back, right leg bottom-front, right leg bottom-back */
+  [0, 0, 255],
+  [0, 255, 0],
+  [255, 0, 0],
+  [0, 255, 255],
+  /* Left leg bottom-front, left leg bottom-back, right foot, left foot */
+  [0, 255, 0],
+  [0, 0, 255],
+  [255, 127, 0],
+  [255, 0, 255]
+];
+
+function useModelDraw(
   canvas,
   image,
   model,
-  isMobile,
-  draw,
+  run,
   segmentationsCallback,
-  options = {
-    flip: false,
-    forceFallback: apiSupported("requestIdleCallback")
+  {
+    lowRes = IS_MOBILE,
+    flip = false,
+    forceFallback = false,
+    opacity = 0.5,
+    optimize = IS_MOBILE
   }
 ) {
-  const { flip, forceFallback } = options;
-  useAnimation(
-    async () => {
-      if (canvas && image && draw) {
-        const segmentations = await model.segmentMultiPersonParts(image, {
-          scoreThreshold: isMobile ? 0.3 : 0.4,
-          refineSteps: isMobile ? 9 : 10
-        });
-        const coloredPartImage = bodyPix.toColoredPartMask(segmentations);
-        const opacity = 0.5;
-        const maskBlurAmount = 0;
-        bodyPix.drawMask(
-          canvas,
-          image,
-          coloredPartImage,
-          opacity,
-          maskBlurAmount,
-          flip
-        );
+  const callback = useCallback(async () => {
+    if (canvas && image) {
+      const segmentations = await model.segmentMultiPersonParts(image, {
+        scoreThreshold: lowRes ? 0.3 : 0.4,
+        refineSteps: lowRes ? 9 : 10
+      });
 
-        if (segmentationsCallback) segmentationsCallback(segmentations);
-      }
-    },
-    draw,
-    ANIMATION_FRAMES,
-    forceFallback
-  );
+      const coloredPartImage = bodyPix.toColoredPartMask(
+        segmentations,
+        MODEL_COLORS
+      );
+      const maskBlurAmount = 0;
+      bodyPix.drawMask(
+        canvas,
+        image,
+        coloredPartImage,
+        opacity,
+        maskBlurAmount,
+        flip
+      );
+
+      if (segmentationsCallback) segmentationsCallback(segmentations);
+    }
+  }, [canvas, flip, image, lowRes, model, opacity, segmentationsCallback]);
+  useAnimations(callback, run, { forceFallback, optimize });
 }
+
+export default useModelDraw;

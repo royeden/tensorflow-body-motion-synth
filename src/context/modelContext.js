@@ -1,12 +1,14 @@
-import React, { createContext, useEffect, useRef } from "react";
+import React, { createContext, useEffect, useRef, useState } from "react";
 import * as bodyPix from "@tensorflow-models/body-pix";
 
-import { useToggle } from "../hooks/useToggle";
 import { noOp } from "../constants/functions";
+import useToggle from "../hooks/useToggle";
 
 export const modelContext = createContext({
   model: null,
   modelLoaded: false,
+  modelOpacity: 0.5,
+  setModelOpacity: noOp,
   toggleTrackingActive: noOp,
   trackingActive: false
 });
@@ -15,6 +17,7 @@ const { Provider } = modelContext;
 
 export function ModelProvider({ children }) {
   const model = useRef(null);
+  const [modelOpacity, setModelOpacity] = useState(0.5);
   const [modelLoaded, toggleModelLoaded] = useToggle();
   const [trackingActive, toggleTrackingActive] = useToggle();
 
@@ -33,7 +36,14 @@ export function ModelProvider({ children }) {
 
   return (
     <Provider
-      value={{ model, modelLoaded, toggleTrackingActive, trackingActive }}
+      value={{
+        model,
+        modelLoaded,
+        modelOpacity,
+        setModelOpacity,
+        toggleTrackingActive,
+        trackingActive
+      }}
     >
       {children}
     </Provider>
