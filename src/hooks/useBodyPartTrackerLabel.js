@@ -1,3 +1,5 @@
+// Deprecated
+
 import { useCallback } from "react";
 
 import { ANIMATION_FRAMES } from "../constants/animation";
