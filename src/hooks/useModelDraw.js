@@ -5,6 +5,8 @@ import { ANIMATION_FRAMES } from "../constants/animation";
 import { IS_MOBILE } from "../utils/mobileDetect";
 
 import useAnimations from "./useAnimations";
+import { drawText } from "../utils/canvas";
+import { noOp } from "../constants/functions";
 
 const MODEL_COLORS = [
   /* Right head, left head, right arm top-right, right arm top-left */
@@ -46,12 +48,16 @@ function useModelDraw(
   run,
   segmentationsCallback,
   {
+    bodyPart = "nose",
     fallbackTimeout = ANIMATION_FRAMES,
     flip = false,
     forceFallback = false,
     lowRes = IS_MOBILE,
     opacity = 0.5,
-    optimizePerformance = IS_MOBILE
+    optimizePerformance = IS_MOBILE,
+    peopleTracked = [],
+    text = noOp,
+    threshold = 0.4
   }
 ) {
   const callback = useCallback(async () => {
@@ -76,8 +82,20 @@ function useModelDraw(
       );
 
       if (segmentationsCallback) segmentationsCallback(segmentations);
+
+      if (peopleTracked.length > 0) {
+        peopleTracked.forEach(({ pose }, id) => {
+          if (pose.keypoints && pose.keypoints.length > 0) {
+            const trackedPart = pose.keypoints.find(
+              ({ part }) => part === bodyPart
+            );
+            if (trackedPart.score > threshold)
+              drawText(canvas, text({ pose, id }), trackedPart.position);
+          }
+        });
+      }
     }
-  }, [canvas, flip, image, lowRes, model, opacity, segmentationsCallback]);
+  }, [bodyPart, canvas, flip, image, lowRes, model, opacity, peopleTracked, segmentationsCallback, text, threshold]);
   useAnimations(callback, run, {
     fallbackTimeout,
     forceFallback,

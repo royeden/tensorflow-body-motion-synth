@@ -10,7 +10,6 @@ import styled from "styled-components";
 
 import { createRefDescription } from "../constants/objects";
 import { noOp } from "../constants/functions";
-import useBodyPartTracker from "../hooks/useBodyPartTrackerLabel";
 import useCanvasDraw from "../hooks/useCanvasDraw";
 import useModelDraw from "../hooks/useModelDraw";
 import useStream from "../hooks/useStream";
@@ -83,15 +82,7 @@ export function CameraProvider({ children }) {
     model.current,
     videoActive && imageSrc && trackingActive,
     setPeopleTracked,
-    { opacity: modelOpacity }
-  );
-  useBodyPartTracker(
-    canvasRef.current,
-    videoActive && imageSrc && trackingActive,
-    {
-      peopleTracked,
-      text: drawTrackedId
-    }
+    { opacity: modelOpacity, peopleTracked, text: drawTrackedId }
   );
 
   return (
