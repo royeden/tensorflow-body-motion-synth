@@ -174,61 +174,53 @@ function Synth({ id, person, personId, removeSynth }) {
         options={frequencyDirectionOptions}
         placeholder="Choose an option"
       />
-      <label htmlFor={`Synth_${personId}_${id}_frequency`}>
-        Base Frequency
-      </label>
       <Input
         defaultValue={baseFrequency}
-        min={FREQUENCY_LIMITS.min}
+        label="Base Frequency"
+        labelIdPrefix={`Synth_${personId}_${id}_frequency`}
         max={FREQUENCY_LIMITS.max}
-        id={`Synth_${personId}_${id}_frequency`}
+        min={FREQUENCY_LIMITS.min}
         name="frequency"
-        type="number"
-        validation={validation}
         onChange={value => {
           const parsedValue = parseFloat(value, 10);
           setBaseFrequency(parsedValue);
           if (resetSynthOnUpdate) setFrequency(parsedValue);
         }}
+        type="number"
+        validation={validation}
         value={baseFrequency}
       />
-      <label htmlFor={`Synth_${personId}_${id}_persist`}>
-        Persist when tracking stops:
-      </label>
       <Input
-        id={`Synth_${personId}_${id}_persist`}
-        defaultValue={persist}
         checked={persist}
-        type="checkbox"
+        defaultValue={persist}
+        label="Persist when tracking stops:"
+        labelIdPrefix={`Synth_${personId}_${id}_persist`}
         onChange={togglePersist}
+        type="checkbox"
       />
-      <label htmlFor={`Synth_${personId}_${id}_reset_synth_on_update`}>
-        Reset synth on update:
-      </label>
       <Input
-        id={`Synth_${personId}_${id}_reset_synth_on_update`}
-        defaultValue={resetSynthOnUpdate}
         checked={resetSynthOnUpdate}
-        type="checkbox"
+        defaultValue={resetSynthOnUpdate}
+        label="Reset synth on update:"
+        labelIdPrefix={`Synth_${personId}_${id}_reset_synth_on_update`}
         onChange={toggleResetSynthOnUpdate}
-      />
-      <label htmlFor={`Synth_${personId}_${id}_round_position`}>
-        Round position:
-      </label>
-      <Input
-        id={`Synth_${personId}_${id}_round_position`}
-        defaultValue={roundPosition}
-        checked={roundPosition}
         type="checkbox"
-        onChange={toggleRoundPosition}
       />
-      <label htmlFor={`Synth_${personId}_${id}_tet`}>Tet:</label>
       <Input
-        id={`Synth_${personId}_${id}_tet`}
+        checked={roundPosition}
+        defaultValue={roundPosition}
+        label="Round position:"
+        labelIdPrefix={`Synth_${personId}_${id}_round_position`}
+        onChange={toggleRoundPosition}
+        type="checkbox"
+      />
+      <Input
         defaultValue={tet}
+        label="Tet:"
+        labelIdPrefix={`Synth_${personId}_${id}_tet`}
+        onChange={value => setTet(parseInt(value, 10))}
         type="number"
         validation={tetValidation}
-        onChange={value => setTet(parseInt(value, 10))}
       />
       {/* Todo remove these, they're for debugging */}
       <p>
