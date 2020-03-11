@@ -70,7 +70,7 @@ function Synth({ id, person, personId, removeSynth }) {
       frequencyDirection
         ? FREQUENCY_DIRECTIONS.find(
             option => option.value === frequencyDirection
-          ).transformer
+          ).transformer(!IS_MOBILE)
         : noOp,
     [frequencyDirection]
   );

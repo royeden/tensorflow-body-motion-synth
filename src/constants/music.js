@@ -8,8 +8,9 @@ export const SYNTH_WAVE_TYPES = [
   "triangle",
   "custom"
 ];
+
 export const FREQUENCY_LIMITS = { min: 20, max: 20000 };
-export const TET_LIMITS = { min: 2, max: 24 };
+export const TET_LIMITS = { min: 2, max: 48 };
 
 const transformHorizontal = ({ x }, { width }, inverted = false) => ({
   x: inverted ? width - x : x
@@ -28,54 +29,83 @@ const transformLinear = (
   ...transformVertical(coordinates, canvas, config.invertedVertical)
 });
 
-export const FREQUENCY_DIRECTIONS = [
-  {
-    label: "X-axis (horizontal: left-right)",
+const DIRECTION_TRANSFORMER = {
+  horizontal: {
     value: "horizontal",
-    transformer: (coordinates, canvas) =>
-      transformHorizontal(coordinates, canvas)
+    transformer: isInverted => (coordinates, canvas) =>
+      transformHorizontal(coordinates, canvas, isInverted)
   },
-  {
-    label: "X-axis-inverted (horizontal: right-left)",
+  horizontal_inverted: {
     value: "horizontal_inverted",
-    transformer: (coordinates, canvas) =>
-      transformHorizontal(coordinates, canvas, true)
+    transformer: isInverted => (coordinates, canvas) =>
+      transformHorizontal(coordinates, canvas, !isInverted)
   },
-  {
-    label: "Y-axis (vertical: top-bottom)",
+  vertical: {
     value: "vertical",
-    transformer: (coordinates, canvas) => transformVertical(coordinates, canvas)
+    transformer: () => (coordinates, canvas) =>
+      transformVertical(coordinates, canvas)
   },
-  {
-    label: "Y-axis-inverted (vertical: bottom-top)",
+  vertical_inverted: {
     value: "vertical_inverted",
-    transformer: (coordinates, canvas) =>
+    transformer: () => (coordinates, canvas) =>
       transformVertical(coordinates, canvas, true)
   },
-  {
-    label: "X-axis, Y-axis (linear: left-right, top-bottom)",
+  linear: {
     value: "linear",
-    transformer: (coordinates, canvas) => transformLinear(coordinates, canvas)
+    transformer: isInverted => (coordinates, canvas) =>
+      transformLinear(coordinates, canvas, { invertedHorizontal: isInverted })
   },
-  {
-    label: "X-axis-inverted, Y-axis-inverted (linear: right-right, bottom-top)",
+  linear_inverted: {
     value: "linear_inverted",
-    transformer: (coordinates, canvas) =>
+    transformer: isInverted => (coordinates, canvas) =>
       transformLinear(coordinates, canvas, {
-        invertedHorizontal: true,
+        invertedHorizontal: !isInverted,
         invertedVertical: true
       })
   },
+  linear_horizontal_inverted: {
+    value: "linear_horizontal_inverted",
+    transformer: isInverted => (coordinates, canvas) =>
+      transformLinear(coordinates, canvas, { invertedHorizontal: !isInverted })
+  },
+  linear_vertical_inverted: {
+    value: "linear_vertical_inverted",
+    transformer: () => (coordinates, canvas) =>
+      transformLinear(coordinates, canvas, { invertedVertical: true })
+  }
+};
+
+export const FREQUENCY_DIRECTIONS = [
+  {
+    label: "X-axis (horizontal: left-right)",
+    ...DIRECTION_TRANSFORMER.horizontal
+  },
+  {
+    label: "X-axis-inverted (horizontal: right-left)",
+    ...DIRECTION_TRANSFORMER.horizontal_inverted
+  },
+  {
+    label: "Y-axis (vertical: top-bottom)",
+    ...DIRECTION_TRANSFORMER.vertical
+  },
+  {
+    label: "Y-axis-inverted (vertical: bottom-top)",
+    ...DIRECTION_TRANSFORMER.vertical_inverted
+  },
+  {
+    label: "X-axis, Y-axis (linear: left-right, top-bottom)",
+    ...DIRECTION_TRANSFORMER.linear
+  },
+  {
+    label: "X-axis-inverted, Y-axis-inverted (linear: right-right, bottom-top)",
+    ...DIRECTION_TRANSFORMER.linear_inverted
+  },
   {
     label: "X-axis-inverted, Y-axis (linear: right-left, top-bottom)",
-    value: "linear_horizontal_inverted",
-    transformer: (coordinates, canvas) =>
-      transformLinear(coordinates, canvas, { invertedHorizontal: true })
+    ...DIRECTION_TRANSFORMER.linear_horizontal_inverted
   },
   {
     label: "X-axis, Y-axis-inverted (linear: left-right, bottom-top)",
-    value: "linear_vertical_inverted",
-    transformer: (coordinates, canvas) =>
-      transformLinear(coordinates, canvas, { invertedVertical: true })
+    ...DIRECTION_TRANSFORMER.linear_vertical_inverted
   }
 ];
