@@ -14,11 +14,11 @@ const canUse = apiSupported("requestIdleCallback");
 
 const options = { timeout: ANIMATION_FRAMES };
 
-export function useIdleAnimation(
+function useIdleAnimation(
   callback,
   run,
   fallbackTimeout = ANIMATION_FRAMES, // this is used in cases where we need to configure the interval fps
-  forceFallback = false
+  { forceFallback = false }
 ) {
   const savedCallback = useRef();
 
@@ -47,3 +47,5 @@ export function useIdleAnimation(
     }
   }, [fallbackTimeout, run, shouldFallback]);
 }
+
+export default useIdleAnimation;

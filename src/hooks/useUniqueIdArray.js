@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export function useUniqueIdArray() {
+function useUniqueIdArray() {
   const [state, setState] = useState([]);
   const add = () =>
     setState(prevState => [...prevState, Date.now().toString()]);
@@ -9,3 +9,5 @@ export function useUniqueIdArray() {
   const clear = () => setState([])
   return [state, add, remove, clear];
 }
+
+export default useUniqueIdArray;

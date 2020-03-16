@@ -19,3 +19,5 @@ export function mobileDetect () {
     isSSR
   };
 };
+
+export const IS_MOBILE = mobileDetect().isMobile();

@@ -10,11 +10,11 @@ import { apiSupported } from "../utils/apiSupported";
 
 const canUse = apiSupported("requestAnimationFrame");
 
-export function useAnimation(
+function useAnimation(
   callback,
   run,
   fallbackTimeout = ANIMATION_FRAMES, // this is used in cases where we need to configure the interval fps
-  forceFallback = false
+  { forceFallback = false }
 ) {
   const savedCallback = useRef();
 
@@ -43,3 +43,5 @@ export function useAnimation(
     }
   }, [fallbackTimeout, run, shouldFallback]);
 }
+
+export default useAnimation;

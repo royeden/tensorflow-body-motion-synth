@@ -1,21 +1,20 @@
 import { useEffect } from "react";
-import { mobileDetect } from "../utils/mobileDetect";
 
-const isMobile = mobileDetect().isMobile();
+import { IS_MOBILE } from "../utils/mobileDetect";
 
-export function useStream(videoRef) {
+function useStream(videoRef) {
   useEffect(() => {
     navigator.mediaDevices
       .getUserMedia({
         video: {
           width: {
             min: 160,
-            ideal: isMobile ? 250 : 500,
+            ideal: IS_MOBILE ? 250 : 500,
             max: 500
           },
           height: {
             min: 120,
-            ideal: isMobile ? 250 : 500,
+            ideal: IS_MOBILE ? 250 : 500,
             max: 500
           },
           facingMode: "environment"
@@ -25,5 +24,6 @@ export function useStream(videoRef) {
       .then(stream => (videoRef.current.srcObject = stream))
       .catch(error => console.error(error));
   }, [videoRef]);
-  return isMobile;
 }
+
+export default useStream;
