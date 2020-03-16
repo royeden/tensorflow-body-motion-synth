@@ -41,7 +41,7 @@ const CanvasCamera = styled.canvas`
   ${cameraMixin}
   ${IS_MOBILE ? scaleCanvasMixin : ""}
   ${({ videoActive }) => (videoActive ? "" : hideCanvasMixin)}
-  ${({ display }) => display && "display: none;"};
+  ${({ display }) => display === "false" && "display: none;"};
   opacity: ${({ opacity }) => opacity};
 `;
 
@@ -77,7 +77,7 @@ function CameraDisplay() {
         />
         <CanvasCamera
           {...canvas}
-          display={!trackingActive}
+          display={String(trackingActive)}
           opacity={canvasOpacity}
           videoActive={videoActive}
         />
