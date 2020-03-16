@@ -25,10 +25,6 @@ export const cameraContext = createContext({
   videoActive: noOp
 });
 
-const HiddenCanvas = styled.canvas`
-  display: none;
-`;
-
 const HiddenVideo = styled.video`
   display: none;
 `;
@@ -46,8 +42,8 @@ export function CameraProvider({ children }) {
   const [peopleTracked, setPeopleTracked] = useState([]);
   const [videoActive, toggleVideoActive] = useToggle();
 
+  const auxiliaryCanvasRef = useRef(document.createElement("canvas"));
   const canvasRef = useRef();
-  const hiddenCanvasRef = useRef();
   const hiddenImageRef = useRef();
   const hiddenVideoRef = useRef();
 
@@ -57,13 +53,20 @@ export function CameraProvider({ children }) {
 
   const [width, height] = useVideoDimensions(hiddenVideoRef, videoActive);
 
+  useEffect(() => {
+    if (width && height) {
+      auxiliaryCanvasRef.current.width = width;
+      auxiliaryCanvasRef.current.height = height;
+    }
+  }, [height, width]);
+
   // Cleanup
   useEffect(() => {
     if (!videoActive && peopleTracked.length > 0) setPeopleTracked([]);
   }, [peopleTracked.length, videoActive]);
 
   useCanvasDraw(
-    hiddenCanvasRef.current,
+    auxiliaryCanvasRef.current,
     hiddenVideoRef.current,
     videoActive,
     setImageSrc,
@@ -87,7 +90,6 @@ export function CameraProvider({ children }) {
 
   return (
     <>
-      <HiddenCanvas height={height} width={width} ref={hiddenCanvasRef} />
       <HiddenImage ref={hiddenImageRef} src={imageSrc} alt="" />
       <HiddenVideo
         autoPlay
