@@ -6,7 +6,7 @@ import { createRefDescription } from "../constants/objects";
 import { modelContext } from "./modelContext";
 
 export const audioContext = createContext({
-  audioContextObject: createRefDescription()
+  audioContextObject: createRefDescription(new AudioContext())
 });
 
 const { Provider } = audioContext;
