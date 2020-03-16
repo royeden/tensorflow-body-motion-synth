@@ -29,22 +29,17 @@ const HiddenVideo = styled.video`
   display: none;
 `;
 
-const HiddenImage = styled.img`
-  display: none;
-`;
-
 const { Provider } = cameraContext;
 
 export function CameraProvider({ children }) {
   const { model, modelOpacity, trackingActive } = useContext(modelContext);
 
-  const [imageSrc, setImageSrc] = useState("");
   const [peopleTracked, setPeopleTracked] = useState([]);
   const [videoActive, toggleVideoActive] = useToggle();
 
   const auxiliaryCanvasRef = useRef(document.createElement("canvas"));
   const canvasRef = useRef();
-  const hiddenImageRef = useRef();
+  const auxiliaryImageRef = useRef(document.createElement("img"));
   const hiddenVideoRef = useRef();
 
   const drawTrackedId = useCallback(({ id }) => id + 1, []);
@@ -54,9 +49,15 @@ export function CameraProvider({ children }) {
   const [width, height] = useVideoDimensions(hiddenVideoRef, videoActive);
 
   useEffect(() => {
+    auxiliaryImageRef.current.src = "";
+  }, []);
+
+  useEffect(() => {
     if (width && height) {
       auxiliaryCanvasRef.current.width = width;
       auxiliaryCanvasRef.current.height = height;
+      auxiliaryImageRef.current.width = width;
+      auxiliaryImageRef.current.height = height;
     }
   }, [height, width]);
 
@@ -67,30 +68,29 @@ export function CameraProvider({ children }) {
 
   useCanvasDraw(
     auxiliaryCanvasRef.current,
+    auxiliaryImageRef.current,
     hiddenVideoRef.current,
     videoActive,
-    setImageSrc,
     {}
   );
   useCanvasDraw(
     canvasRef.current,
+    false,
     hiddenVideoRef.current,
     !trackingActive && videoActive,
-    false,
     {}
   );
   useModelDraw(
     canvasRef.current,
-    hiddenImageRef.current,
+    auxiliaryImageRef.current,
     model.current,
-    videoActive && imageSrc && trackingActive,
+    videoActive && trackingActive,
     setPeopleTracked,
     { opacity: modelOpacity, peopleTracked, text: drawTrackedId }
   );
 
   return (
     <>
-      <HiddenImage ref={hiddenImageRef} src={imageSrc} alt="" />
       <HiddenVideo
         autoPlay
         onPlayCapture={toggleVideoActive}
