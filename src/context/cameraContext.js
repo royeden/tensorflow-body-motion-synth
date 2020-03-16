@@ -6,7 +6,6 @@ import React, {
   useRef,
   useState
 } from "react";
-import styled from "styled-components";
 
 import { createRefDescription } from "../constants/objects";
 import { noOp } from "../constants/functions";
@@ -20,33 +19,32 @@ import { modelContext } from "./modelContext";
 
 export const cameraContext = createContext({
   canvas: { ref: createRefDescription(), height: 0, width: 0 },
+  canvasOpacity: 0.7,
   peopleTracked: [],
+  setCanvasOpacity: noOp,
   toggleVideoActive: noOp,
+  video: createRefDescription(),
   videoActive: noOp
 });
-
-const HiddenVideo = styled.video`
-  display: none;
-`;
 
 const { Provider } = cameraContext;
 
 export function CameraProvider({ children }) {
   const { model, modelOpacity, trackingActive } = useContext(modelContext);
-
+  const [canvasOpacity, setCanvasOpacity] = useState(0.7);
   const [peopleTracked, setPeopleTracked] = useState([]);
   const [videoActive, toggleVideoActive] = useToggle();
 
   const auxiliaryCanvasRef = useRef(document.createElement("canvas"));
-  const canvasRef = useRef();
   const auxiliaryImageRef = useRef(document.createElement("img"));
-  const hiddenVideoRef = useRef();
+  const canvasRef = useRef();
+  const videoRef = useRef();
 
   const drawTrackedId = useCallback(({ id }) => id + 1, []);
 
-  useStream(hiddenVideoRef);
+  useStream(videoRef);
 
-  const [width, height] = useVideoDimensions(hiddenVideoRef, videoActive);
+  const [width, height] = useVideoDimensions(videoRef, videoActive);
 
   useEffect(() => {
     auxiliaryImageRef.current.src = "";
@@ -69,14 +67,14 @@ export function CameraProvider({ children }) {
   useCanvasDraw(
     auxiliaryCanvasRef.current,
     auxiliaryImageRef.current,
-    hiddenVideoRef.current,
+    videoRef.current,
     videoActive,
     {}
   );
   useCanvasDraw(
     canvasRef.current,
     false,
-    hiddenVideoRef.current,
+    videoRef.current,
     !trackingActive && videoActive,
     {}
   );
@@ -90,24 +88,18 @@ export function CameraProvider({ children }) {
   );
 
   return (
-    <>
-      <HiddenVideo
-        autoPlay
-        onPlayCapture={toggleVideoActive}
-        ref={hiddenVideoRef}
-      >
-        {videoActive ? "Video Active" : "Waiting for stream"}
-      </HiddenVideo>
-      <Provider
-        value={{
-          canvas: { ref: canvasRef, height, width },
-          peopleTracked,
-          toggleVideoActive,
-          videoActive
-        }}
-      >
-        {children}
-      </Provider>
-    </>
+    <Provider
+      value={{
+        canvas: { ref: canvasRef, height, width },
+        canvasOpacity,
+        peopleTracked,
+        setCanvasOpacity,
+        toggleVideoActive,
+        video: videoRef,
+        videoActive
+      }}
+    >
+      {children}
+    </Provider>
   );
 }

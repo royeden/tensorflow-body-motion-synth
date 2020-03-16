@@ -3,6 +3,7 @@ import styled, { css } from "styled-components";
 
 import { IS_MOBILE } from "../utils/mobileDetect";
 import { cameraContext } from "../context/cameraContext";
+import { modelContext } from "../context/modelContext";
 
 const hideCanvasMixin = css`
   display: none;
@@ -22,7 +23,11 @@ const webCanvasMixin = css`
   min-width: 500px;
 `;
 
-const CanvasContainer = styled.div`
+const cameraMixin = css`
+  position: absolute;
+`;
+
+const CameraContainer = styled.div`
   align-items: center;
   background-color: #000;
   display: flex;
@@ -33,8 +38,18 @@ const CanvasContainer = styled.div`
 `;
 
 const CanvasCamera = styled.canvas`
+  ${cameraMixin}
   ${IS_MOBILE ? scaleCanvasMixin : ""}
   ${({ videoActive }) => (videoActive ? "" : hideCanvasMixin)}
+  ${({ display }) => display && "display: none;"};
+  opacity: ${({ opacity }) => opacity};
+`;
+
+const VideoCamera = styled.video`
+  ${cameraMixin}
+  ${IS_MOBILE ? scaleCanvasMixin : ""}
+  ${({ videoActive }) => (videoActive ? "" : hideCanvasMixin)}
+  transform: rotateY(180deg);
 `;
 
 const FallbackMessage = styled.h1`
@@ -42,20 +57,35 @@ const FallbackMessage = styled.h1`
 `;
 
 function CameraDisplay() {
-  const { canvas, peopleTracked, videoActive } = useContext(
-    cameraContext
-  );
+  const {
+    canvasOpacity,
+    canvas,
+    peopleTracked,
+    toggleVideoActive,
+    video,
+    videoActive
+  } = useContext(cameraContext);
+  const { trackingActive } = useContext(modelContext);
   return (
     <>
-      <CanvasContainer>
-        <CanvasCamera
-          {...canvas}
+      <CameraContainer>
+        <VideoCamera
+          autoPlay
+          onPlayCapture={toggleVideoActive}
+          ref={video}
           videoActive={videoActive}
         />
+        <CanvasCamera
+          {...canvas}
+          display={!trackingActive}
+          opacity={canvasOpacity}
+          videoActive={videoActive}
+        />
+
         {!videoActive && (
           <FallbackMessage>Waiting for stream to start...</FallbackMessage>
         )}
-      </CanvasContainer>
+      </CameraContainer>
       <h1>People: {peopleTracked.length}</h1>
     </>
   );

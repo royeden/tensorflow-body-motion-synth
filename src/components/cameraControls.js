@@ -6,11 +6,16 @@ import { modelContext } from "../context/modelContext";
 import Input from "./input";
 
 function CameraControls() {
-  const { videoActive, toggleVideoActive } = useContext(cameraContext);
+  const {
+    canvasOpacity,
+    setCanvasOpacity,
+    toggleVideoActive,
+    videoActive
+  } = useContext(cameraContext);
   const {
     modelLoaded,
-    modelOpacity,
-    setModelOpacity,
+    modelColorsOpacity,
+    setModelColorsOpacity,
     trackingActive,
     toggleTrackingActive
   } = useContext(modelContext);
@@ -22,18 +27,27 @@ function CameraControls() {
       <button disabled={!modelLoaded} onClick={toggleTrackingActive}>
         {trackingActive ? "Pause" : "Resume"} Tracking
       </button>
-      <label htmlFor="model_opacity">Model opacity</label>
-      <p>0</p>
+      <br />
       <Input
-        id="model_opacity"
+        defaultValue={canvasOpacity}
+        label="Model Opacity"
+        labelIdPrefix="camera_opacity"
         max="1"
-        min="0"
-        onChange={value => setModelOpacity(parseFloat(value, 10))}
+        min="0.5"
+        onChange={value => setCanvasOpacity(parseFloat(value, 10))}
         step="0.1"
         type="range"
-        value={modelOpacity}
       />
-      <p>1</p>
+      <Input
+        defaultValue={modelColorsOpacity}
+        label="Model Colors Opacity"
+        labelIdPrefix="model_opacity"
+        max="1"
+        min="0"
+        onChange={value => setModelColorsOpacity(parseFloat(value, 10))}
+        step="0.1"
+        type="range"
+      />
     </div>
   );
 }
