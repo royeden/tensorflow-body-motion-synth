@@ -9,13 +9,9 @@ const hideCanvasMixin = css`
   display: none;
 `;
 
-const scaleCanvasMixin = css`
-  transform: scale(1.5);
-`;
-
 const mobileCanvasMixin = css`
-  min-height: 250px;
-  min-width: 250px;
+  min-height: 300px;
+  min-width: 300px;
 `;
 
 const webCanvasMixin = css`
@@ -25,6 +21,10 @@ const webCanvasMixin = css`
 
 const cameraMixin = css`
   position: absolute;
+`;
+
+const flipCameraMixin = css`
+  transform: rotateY(180deg);
 `;
 
 const CameraContainer = styled.div`
@@ -39,7 +39,6 @@ const CameraContainer = styled.div`
 
 const CanvasCamera = styled.canvas`
   ${cameraMixin}
-  ${IS_MOBILE ? scaleCanvasMixin : ""}
   ${({ videoActive }) => (videoActive ? "" : hideCanvasMixin)}
   ${({ display }) => display === "false" && "display: none;"};
   opacity: ${({ opacity }) => opacity};
@@ -47,9 +46,8 @@ const CanvasCamera = styled.canvas`
 
 const VideoCamera = styled.video`
   ${cameraMixin}
-  ${IS_MOBILE ? scaleCanvasMixin : ""}
-  ${({ videoActive }) => (videoActive ? "" : hideCanvasMixin)}
-  transform: rotateY(180deg);
+  ${({ videoActive }) => (!videoActive && hideCanvasMixin)}
+  ${!IS_MOBILE && flipCameraMixin}
 `;
 
 const FallbackMessage = styled.h1`

@@ -9,12 +9,12 @@ function useStream(videoRef) {
         video: {
           width: {
             min: 160,
-            ideal: IS_MOBILE ? 250 : 500,
+            ideal: IS_MOBILE ? 300 : 500,
             max: 500
           },
           height: {
             min: 120,
-            ideal: IS_MOBILE ? 250 : 500,
+            ideal: IS_MOBILE ? 300 : 500,
             max: 500
           },
           facingMode: "environment"

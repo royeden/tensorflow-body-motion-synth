@@ -30,7 +30,7 @@ export const cameraContext = createContext({
 const { Provider } = cameraContext;
 
 export function CameraProvider({ children }) {
-  const { model, modelOpacity, trackingActive } = useContext(modelContext);
+  const { model, modelColorsOpacity, trackingActive } = useContext(modelContext);
   const [canvasOpacity, setCanvasOpacity] = useState(0.7);
   const [peopleTracked, setPeopleTracked] = useState([]);
   const [videoActive, toggleVideoActive] = useToggle();
@@ -84,7 +84,7 @@ export function CameraProvider({ children }) {
     model.current,
     videoActive && trackingActive,
     setPeopleTracked,
-    { opacity: modelOpacity, peopleTracked, text: drawTrackedId }
+    { opacity: modelColorsOpacity, peopleTracked, text: drawTrackedId }
   );
 
   return (

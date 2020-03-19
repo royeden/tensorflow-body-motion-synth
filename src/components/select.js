@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 
 function Select({
+  canBeEmpty = true,
   label,
   labelIdPrefix,
   labelProps = {},
@@ -18,7 +19,7 @@ function Select({
         </label>
       )}
       <select {...additionalPropsWithLabel} onChange={onChange}>
-        {placeholder && <option value="">{placeholder}</option>}
+        {placeholder && <option disabled={!canBeEmpty} value="">{placeholder}</option>}
         {options.map(({ key, value, label, ...option }) => (
           <option key={key || value} value={value} {...option}>
             {label}
