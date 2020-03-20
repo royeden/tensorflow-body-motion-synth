@@ -13,12 +13,12 @@ export function getFrequencyFromTemperamentScaleNote(
     throw new Error("This function expects numbers as arguments, nothing else");
   if (baseNoteFrequency < 20)
     throw new Error("Don't use a base frequency below human hearing");
-  if (baseNotePosition <= 0)
+  if (baseNotePosition < 0)
     throw new Error("Don't use a base note position below 0");
   if (tet < 1) throw new Error("Don't use an invalid scale");
 
   return (
     baseNoteFrequency *
-    Math.pow(Math.pow(2, 1 / tet), baseNotePosition - desiredNotePosition)
+    Math.pow(Math.pow(2, 1 / tet), desiredNotePosition - baseNotePosition)
   );
 }
