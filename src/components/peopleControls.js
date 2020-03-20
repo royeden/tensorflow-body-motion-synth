@@ -1,10 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 
 import SynthControls from "./synthControls";
 import Select from "./select";
 
 function PeopleControls(props) {
   const [peopleAmount, setPeopleAmount] = useState(1);
+  const handleChange = useCallback(
+    value => setPeopleAmount(parseInt(value, 10)),
+    []
+  );
   return (
     <>
       <Select
@@ -15,7 +19,7 @@ function PeopleControls(props) {
           label: `${index + 1} Person${index > 0 ? "s" : ""}`,
           value: index + 1
         }))}
-        onChange={event => setPeopleAmount(parseInt(event.target.value, 10))}
+        onChange={handleChange}
         value={peopleAmount}
       >
         {[...Array(3)].map((_, index) => (

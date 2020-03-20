@@ -97,14 +97,14 @@ function SynthBodyControls({
       <Select
         label="Body part:"
         labelPrefix="Body_part_select"
-        onChange={event => setBodyPart(event.target.value)}
+        onChange={setBodyPart}
         options={modelOptions}
         placeholder="Choose an option"
       />
       <Select
         label="Tracking direction:"
         labelPrefix="Tracking_direction_select"
-        onChange={event => setTrackingDirection(event.target.value)}
+        onChange={setTrackingDirection}
         options={trackingDirectionOptions}
         placeholder="Choose an option"
       />

@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useCallback, useRef } from "react";
 
 function Select({
   canBeEmpty = true,
@@ -11,6 +11,7 @@ function Select({
 }) {
   const id = useRef(`${labelIdPrefix || label}_${Date.now()}`);
   const additionalPropsWithLabel = label ? { id: id.current } : {};
+  const handleChange = useCallback(event => onChange(event.target.value), [onChange]);
   return (
     <>
       {label && (
@@ -18,8 +19,12 @@ function Select({
           {label}
         </label>
       )}
-      <select {...additionalPropsWithLabel} onChange={onChange}>
-        {placeholder && <option disabled={!canBeEmpty} value="">{placeholder}</option>}
+      <select {...additionalPropsWithLabel} onChange={handleChange}>
+        {placeholder && (
+          <option disabled={!canBeEmpty} value="">
+            {placeholder}
+          </option>
+        )}
         {options.map(({ key, value, label, ...option }) => (
           <option key={key || value} value={value} {...option}>
             {label}
