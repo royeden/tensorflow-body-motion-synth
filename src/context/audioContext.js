@@ -17,7 +17,7 @@ export function AudioProvider({ children }) {
   useEffect(() => {
     if (modelLoaded) {
       audioContextObject.current = new AudioContext();
-      console.log("Initialized audio context")
+      console.log("Initialized audio context");
     }
   }, [modelLoaded]);
   return <Provider value={{ audioContextObject }}>{children}</Provider>;

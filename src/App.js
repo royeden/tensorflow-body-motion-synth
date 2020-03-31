@@ -1,5 +1,6 @@
 import React from "react";
 
+import ErrorLayout from "./ErrorLayout";
 import CameraDisplay from "./components/cameraDisplay";
 import CameraControls from "./components/cameraControls";
 import PeopleControls from "./components/peopleControls";
@@ -9,15 +10,17 @@ import { ModelProvider } from "./context/modelContext";
 
 function App() {
   return (
-    <ModelProvider>
-      <CameraProvider>
-        <AudioProvider>
-          <CameraDisplay />
-          <CameraControls />
-          <PeopleControls />
-        </AudioProvider>
-      </CameraProvider>
-    </ModelProvider>
+    <ErrorLayout>
+      <ModelProvider>
+        <CameraProvider>
+          <AudioProvider>
+            <CameraDisplay />
+            <CameraControls />
+            <PeopleControls />
+          </AudioProvider>
+        </CameraProvider>
+      </ModelProvider>
+    </ErrorLayout>
   );
 }
 
