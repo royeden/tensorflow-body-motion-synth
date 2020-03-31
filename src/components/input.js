@@ -12,6 +12,7 @@ function Input({
   onError,
   onBlur,
   onFocus,
+  resetOnError = false,
   type,
   validation,
   ...props
@@ -47,7 +48,10 @@ function Input({
         }}
         onBlur={event => {
           if (onBlur) onBlur(event);
-          if (error) setInputValue(defaultValue);
+          if (error && resetOnError) {
+            setInputValue(defaultValue);
+            setError(false);
+          }
         }}
         onFocus={event => {
           if (onFocus) onFocus(event);

@@ -21,15 +21,15 @@ function SynthFrequencyNotesControls({
   tet
 }) {
   const maxNoteValidation = useCallback(
-    value => value >= minNote && value <= 166,
+    value => value !== "" && value >= minNote && value <= 166,
     [minNote]
   );
   const centerNoteValidation = useCallback(
-    value => value >= minNote && value <= maxNote,
+    value => value !== "" && value >= minNote && value <= maxNote,
     [maxNote, minNote]
   );
   const minNoteValidation = useCallback(
-    value => value && value >= 0 && value <= maxNote,
+    value => value !== "" && value >= 0 && value <= maxNote,
     [maxNote]
   );
 
@@ -89,6 +89,7 @@ function SynthFrequencyNotesControls({
         min={0}
         max={166}
         onChange={handleMinNoteChange}
+        resetOnError
         type="number"
         validation={minNoteValidation}
       />
@@ -99,6 +100,7 @@ function SynthFrequencyNotesControls({
         min={0}
         max={166}
         onChange={handleCenterNoteChange}
+        resetOnError
         type="number"
         validation={centerNoteValidation}
       />
@@ -109,6 +111,7 @@ function SynthFrequencyNotesControls({
         min={0}
         max={166}
         onChange={handleMaxNoteChange}
+        resetOnError
         type="number"
         validation={maxNoteValidation}
       />
@@ -117,6 +120,7 @@ function SynthFrequencyNotesControls({
         label="Tet:"
         labelIdPrefix={`Synth_${personId}_${id}_tet`}
         onChange={handleTetChange}
+        resetOnError
         type="number"
         validation={tetValidation}
       />
@@ -127,6 +131,7 @@ function SynthFrequencyNotesControls({
         max={FREQUENCY_LIMITS.max}
         min={FREQUENCY_LIMITS.min}
         onChange={handlBaseFrequencyChange}
+        resetOnError
         type="number"
         validation={frequencyValidation}
       />
