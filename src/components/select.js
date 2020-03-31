@@ -7,11 +7,14 @@ function Select({
   labelProps = {},
   onChange,
   options,
-  placeholder
+  placeholder,
+  value = ""
 }) {
   const id = useRef(`${labelIdPrefix || label}_${Date.now()}`);
   const additionalPropsWithLabel = label ? { id: id.current } : {};
-  const handleChange = useCallback(event => onChange(event.target.value), [onChange]);
+  const handleChange = useCallback(event => onChange(event.target.value), [
+    onChange
+  ]);
   return (
     <>
       {label && (
@@ -21,12 +24,21 @@ function Select({
       )}
       <select {...additionalPropsWithLabel} onChange={handleChange}>
         {placeholder && (
-          <option disabled={!canBeEmpty} value="">
+          <option
+            disabled={!canBeEmpty}
+            selected={value === ""}
+            value=""
+          >
             {placeholder}
           </option>
         )}
-        {options.map(({ key, value, label, ...option }) => (
-          <option key={key || value} value={value} {...option}>
+        {options.map(({ key, value: optionValue, label, ...option }) => (
+          <option
+            key={key || optionValue}
+            value={optionValue}
+            {...option}
+            selected={value === optionValue}
+          >
             {label}
           </option>
         ))}

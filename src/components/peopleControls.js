@@ -1,9 +1,11 @@
-import React, { useState, useCallback } from "react";
+import React, { useCallback, useState } from "react";
 
-import SynthControls from "./synthControls";
+import { BaseSynthProvider } from "../context/baseSynthContext";
+
 import Select from "./select";
+import SynthControls from "./synthControls";
 
-function PeopleControls(props) {
+function PeopleControls() {
   const [peopleAmount, setPeopleAmount] = useState(1);
   const handleChange = useCallback(
     value => setPeopleAmount(parseInt(value, 10)),
@@ -21,19 +23,16 @@ function PeopleControls(props) {
         }))}
         onChange={handleChange}
         value={peopleAmount}
-      >
-        {[...Array(3)].map((_, index) => (
-          <option key={`select_option_${index}`} value={index + 1}>
-            {index + 1} Person{index > 0 && "s"}
-          </option>
+      />
+
+      <BaseSynthProvider>
+        {[...Array(peopleAmount)].map((_, index) => (
+          <SynthControls
+            key={`Synth_controls_for_person_${index}`}
+            personId={index}
+          />
         ))}
-      </Select>
-      {[...Array(peopleAmount)].map((_, index) => (
-        <SynthControls
-          key={`Synth_controls_for_person_${index}`}
-          personId={index}
-        />
-      ))}
+      </BaseSynthProvider>
     </>
   );
 }
