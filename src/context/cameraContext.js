@@ -30,7 +30,9 @@ export const cameraContext = createContext({
 const { Provider } = cameraContext;
 
 export function CameraProvider({ children }) {
-  const { model, modelColorsOpacity, trackingActive } = useContext(modelContext);
+  const { model, modelColorsOpacity, trackingActive } = useContext(
+    modelContext
+  );
   const [canvasOpacity, setCanvasOpacity] = useState(0.7);
   const [peopleTracked, setPeopleTracked] = useState([]);
   const [videoActive, toggleVideoActive] = useToggle();
@@ -61,8 +63,9 @@ export function CameraProvider({ children }) {
 
   // Cleanup
   useEffect(() => {
-    if (!videoActive && peopleTracked.length > 0) setPeopleTracked([]);
-  }, [peopleTracked.length, videoActive]);
+    if (!(trackingActive && videoActive) && peopleTracked.length > 0)
+      setPeopleTracked([]);
+  }, [peopleTracked.length, trackingActive, videoActive]);
 
   useCanvasDraw(
     auxiliaryCanvasRef.current,
