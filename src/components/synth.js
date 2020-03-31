@@ -1,15 +1,12 @@
 import React, { useCallback, useContext, useMemo, useState } from "react";
 
-import {
-  A4_440,
-  BASE_TET,
-  SYNTH_WAVE_TYPES
-} from "../constants/music";
-import { audioContext } from "../context/audioContext";
-import { cameraContext } from "../context/cameraContext";
 import useOscillator from "../hooks/useOscillator";
 import useTemperamentScale from "../hooks/useTemperamentScale";
 import useToggle from "../hooks/useToggle";
+import { A4_440, SYNTH_WAVE_TYPES } from "../constants/music";
+import { audioContext } from "../context/audioContext";
+import { baseSynthContext } from "../context/baseSynthContext";
+import { cameraContext } from "../context/cameraContext";
 
 import Input from "./input";
 import Select from "./select";
@@ -17,15 +14,20 @@ import SynthFrequencyControls from "./synthFrequencyControls";
 
 function Synth({ id, person, personId, removeSynth }) {
   const { audioContextObject } = useContext(audioContext);
+  const baseSynth = useContext(baseSynthContext);
   const {
     canvas: { width, height }
   } = useContext(cameraContext);
-  const [canPlay, setCanPlay] = useState(false);
 
-  const [centerNote, setCenterNote] = useState(A4_440.position);
-  const [baseFrequency, setBaseFrequency] = useState(A4_440.frequency);
-  const [synthWaveType, setSynthWaveType] = useState(SYNTH_WAVE_TYPES[0]);
-  const [tet, setTet] = useState(BASE_TET);
+  const [canPlay, setCanPlay] = useState(false);
+  // Sound options
+  const [baseFrequency, setBaseFrequency] = useState(baseSynth.baseFrequency);
+  const [synthWaveType, setSynthWaveType] = useState(baseSynth.synthWaveType);
+  // Note options
+  const [centerNote, setCenterNote] = useState(baseSynth.centerNote);
+  const [maxNote, setMaxNote] = useState(baseSynth.maxNote);
+  const [minNote, setMinNote] = useState(baseSynth.minNote);
+  const [tet, setTet] = useState(baseSynth.tet);
   const [frequency, setFrequency, getNote] = useTemperamentScale(
     A4_440.position,
     {
@@ -34,10 +36,21 @@ function Synth({ id, person, personId, removeSynth }) {
       tet
     }
   );
-  const [muted, toggleMuted] = useToggle(true);
-  const [notes, toggleNotes] = useToggle(true);
-  const [persist, togglePersist] = useToggle(true);
-  const [resetSynthOnUpdate, toggleResetSynthOnUpdate] = useToggle(true);
+  // Synth toggle options
+  const [muted, toggleMuted] = useToggle(baseSynth.muted);
+  const [notes, toggleNotes] = useToggle(baseSynth.notes);
+  const [persist, togglePersist] = useToggle(baseSynth.persist);
+  const [resetSynthOnUpdate, toggleResetSynthOnUpdate] = useToggle(
+    baseSynth.resetSynthOnUpdate
+  );
+  // Body part tracking options
+  const [bodyPart, setBodyPart] = useState(baseSynth.bodyPart);
+  const [roundPosition, toggleRoundPosition] = useToggle(
+    baseSynth.roundPosition
+  );
+  const [trackingDirection, setTrackingDirection] = useState(
+    baseSynth.trackingDirection
+  );
 
   const handleRemove = useCallback(() => removeSynth(id), [id, removeSynth]);
 
@@ -67,27 +80,38 @@ function Synth({ id, person, personId, removeSynth }) {
       <h4>Frequency: {frequency}</h4>
       <Select
         label="Synth type:"
-        labelPrefix="Synth_type_select"
+        labelPrefix={`Synth_${personId}_${id}_synth_type`}
         onChange={setSynthWaveType}
         options={synthOptions}
+        value={synthWaveType}
       />
       <SynthFrequencyControls
         baseFrequency={baseFrequency}
+        bodyPart={bodyPart}
         canPlay={canPlay}
         centerNote={centerNote}
         getNote={getNote}
         height={height}
         id={id}
+        maxNote={maxNote}
+        minNote={minNote}
         notes={notes}
         person={person}
         personId={personId}
         resetSynthOnUpdate={resetSynthOnUpdate}
+        roundPosition={roundPosition}
         setBaseFrequency={setBaseFrequency}
+        setBodyPart={setBodyPart}
         setCanPlay={setCanPlay}
         setCenterNote={setCenterNote}
         setFrequency={setFrequency}
+        setMaxNote={setMaxNote}
+        setMinNote={setMinNote}
         setTet={setTet}
+        setTrackingDirection={setTrackingDirection}
         tet={tet}
+        toggleRoundPosition={toggleRoundPosition}
+        trackingDirection={trackingDirection}
         width={width}
       />
       <Input

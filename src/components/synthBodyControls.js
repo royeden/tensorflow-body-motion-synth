@@ -1,6 +1,5 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo } from "react";
 
-import useToggle from "../hooks/useToggle";
 import { MODEL_PARTS } from "../constants/model";
 import { IS_MOBILE } from "../utils/mobileDetect";
 import { TRACKING_DIRECTIONS } from "../utils/tracking";
@@ -11,18 +10,22 @@ import Input from "./input";
 import Select from "./select";
 
 function SynthBodyControls({
+  bodyPart,
   canPlay,
   id,
   onPositionChange,
   person,
   personId,
-  setCanPlay
+  roundPosition,
+  setBodyPart,
+  setCanPlay,
+  setTrackingDirection,
+  toggleRoundPosition,
+  trackingDirection
 }) {
   const {
     canvas: { width, height }
   } = useContext(cameraContext);
-
-  const [bodyPart, setBodyPart] = useState("");
   const keypoints = person ? person.pose.keypoints : false;
   const trackedBodyPart =
     keypoints && bodyPart && keypoints.find(({ part }) => part === bodyPart);
@@ -36,8 +39,6 @@ function SynthBodyControls({
     [id, personId]
   );
 
-  const [roundPosition, toggleRoundPosition] = useToggle(true);
-  const [trackingDirection, setTrackingDirection] = useState("");
   const trackingDirectionOptions = useMemo(
     () =>
       TRACKING_DIRECTIONS.map(({ transformer, ...option }) => ({
@@ -100,6 +101,7 @@ function SynthBodyControls({
         onChange={setBodyPart}
         options={modelOptions}
         placeholder="Choose an option"
+        value={bodyPart}
       />
       <Select
         label="Tracking direction:"
@@ -107,6 +109,7 @@ function SynthBodyControls({
         onChange={setTrackingDirection}
         options={trackingDirectionOptions}
         placeholder="Choose an option"
+        value={trackingDirection}
       />
       <Input
         checked={roundPosition}

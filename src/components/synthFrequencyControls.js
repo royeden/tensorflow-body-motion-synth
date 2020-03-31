@@ -1,32 +1,40 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 
-import Input from "./input";
 import { FREQUENCY_LIMITS, TET_LIMITS } from "../constants/music";
 import { map, mapWithinBoundary } from "../utils/math";
+
+import Input from "./input";
 import SynthBodyControls from "./synthBodyControls";
 
 function SynthFrequencyControls({
   baseFrequency,
+  bodyPart,
   canPlay,
   centerNote,
   getNote,
   height,
   id,
+  maxNote,
+  minNote,
   notes,
   person,
   personId,
+  roundPosition,
   resetSynthOnUpdate,
   setBaseFrequency,
+  setBodyPart,
   setCanPlay,
   setCenterNote,
   setFrequency,
+  setMaxNote,
+  setMinNote,
   setTet,
+  setTrackingDirection,
   tet,
+  toggleRoundPosition,
+  trackingDirection,
   width
 }) {
-  const [minNote, setMinNote] = useState(0);
-  const [maxNote, setMaxNote] = useState(88);
-
   const maxNoteValidation = useCallback(
     value => value >= minNote && value <= 166,
     [minNote]
@@ -103,7 +111,7 @@ function SynthFrequencyControls({
       setMinNote(parsedValue);
       if (resetSynthOnUpdate) setFrequency(baseFrequency);
     },
-    [baseFrequency, resetSynthOnUpdate, setFrequency]
+    [baseFrequency, resetSynthOnUpdate, setFrequency, setMinNote]
   );
 
   const handleMaxNoteChange = useCallback(
@@ -112,7 +120,7 @@ function SynthFrequencyControls({
       setMaxNote(parsedValue);
       if (resetSynthOnUpdate) setFrequency(baseFrequency);
     },
-    [baseFrequency, resetSynthOnUpdate, setFrequency]
+    [baseFrequency, resetSynthOnUpdate, setFrequency, setMaxNote]
   );
   const handleCenterNoteChange = useCallback(
     value => {
@@ -131,13 +139,14 @@ function SynthFrequencyControls({
     [resetSynthOnUpdate, setBaseFrequency, setFrequency]
   );
 
-  const handlTetChange = useCallback(value => setTet(parseInt(value, 10)), [
+  const handleTetChange = useCallback(value => setTet(parseInt(value, 10)), [
     setTet
   ]);
 
   return (
     <>
       <SynthBodyControls
+        bodyPart={bodyPart}
         canPlay={canPlay}
         id={id}
         onPositionChange={
@@ -145,7 +154,12 @@ function SynthFrequencyControls({
         }
         person={person}
         personId={personId}
+        roundPosition={roundPosition}
+        setBodyPart={setBodyPart}
         setCanPlay={setCanPlay}
+        setTrackingDirection={setTrackingDirection}
+        toggleRoundPosition={toggleRoundPosition}
+        trackingDirection={trackingDirection}
       />
       {notes && (
         <>
@@ -183,7 +197,7 @@ function SynthFrequencyControls({
             defaultValue={tet}
             label="Tet:"
             labelIdPrefix={`Synth_${personId}_${id}_tet`}
-            onChange={handlTetChange}
+            onChange={handleTetChange}
             type="number"
             validation={tetValidation}
           />
