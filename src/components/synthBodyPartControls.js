@@ -39,20 +39,20 @@ function SynthBodyPartControls({
   return (
     <>
       <Select
+        defaultValue={bodyPart}
         label="Body part:"
-        labelPrefix="Body_part_select"
+        labelIdPrefix="Body_part_select"
         onChange={setBodyPart}
         options={modelOptions}
         placeholder="Choose an option"
-        value={bodyPart}
       />
       <Select
+        defaultValue={trackingDirection}
         label="Tracking direction:"
-        labelPrefix="Tracking_direction_select"
+        labelIdPrefix="Tracking_direction_select"
         onChange={setTrackingDirection}
         options={trackingDirectionOptions}
         placeholder="Choose an option"
-        value={trackingDirection}
       />
       <Input
         checked={roundPosition}

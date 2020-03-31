@@ -66,6 +66,7 @@ function SynthBodyControls({
 
   useEffect(() => {
     if (trackedBodyPoint && onPositionChange) {
+      console.log(trackedBodyPoint)
       onPositionChange(trackedBodyPoint);
       if (!canPlay) setCanPlay(true);
     } else {

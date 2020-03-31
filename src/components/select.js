@@ -2,13 +2,14 @@ import React, { useCallback, useRef } from "react";
 
 function Select({
   canBeEmpty = true,
+  defaultValue,
   label,
   labelIdPrefix,
   labelProps = {},
   onChange,
   options,
   placeholder,
-  value = ""
+  ...props
 }) {
   const id = useRef(`${labelIdPrefix || label}_${Date.now()}`);
   const additionalPropsWithLabel = label ? { id: id.current } : {};
@@ -22,22 +23,20 @@ function Select({
           {label}
         </label>
       )}
-      <select {...additionalPropsWithLabel} onChange={handleChange}>
+      <select {...additionalPropsWithLabel} {...props} defaultValue={defaultValue} onChange={handleChange}>
         {placeholder && (
           <option
             disabled={!canBeEmpty}
-            selected={value === ""}
             value=""
           >
             {placeholder}
           </option>
         )}
-        {options.map(({ key, value: optionValue, label, ...option }) => (
+        {options.map(({ key, value, label, ...option }) => (
           <option
-            key={key || optionValue}
-            value={optionValue}
+            key={key || value}
+            value={value}
             {...option}
-            selected={value === optionValue}
           >
             {label}
           </option>

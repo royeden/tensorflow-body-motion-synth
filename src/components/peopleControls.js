@@ -14,6 +14,7 @@ function PeopleControls() {
   return (
     <>
       <Select
+        defaultValue={peopleAmount}
         label="Amount of people to track"
         labelIdPrefix="amount_of_people"
         options={[...Array(3)].map((_, index) => ({
@@ -22,7 +23,6 @@ function PeopleControls() {
           value: index + 1
         }))}
         onChange={handleChange}
-        value={peopleAmount}
       />
 
       <BaseSynthProvider>

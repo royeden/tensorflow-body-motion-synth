@@ -79,11 +79,11 @@ function Synth({ id, person, personId, removeSynth }) {
       </h1>
       <h4>Frequency: {frequency}</h4>
       <Select
+        defaultValue={synthWaveType}
         label="Synth type:"
-        labelPrefix={`Synth_${personId}_${id}_synth_type`}
+        labelIdPrefix={`Synth_${personId}_${id}_synth_type`}
         onChange={setSynthWaveType}
         options={synthOptions}
-        value={synthWaveType}
       />
       <SynthFrequencyControls
         baseFrequency={baseFrequency}

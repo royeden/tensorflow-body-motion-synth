@@ -44,8 +44,8 @@ function SynthFrequencyControls({
             x,
             0,
             width,
-            FREQUENCY_LIMITS.min,
-            y ? FREQUENCY_LIMITS.max / 2 : FREQUENCY_LIMITS.max
+            y ? FREQUENCY_LIMITS.max / 2 : FREQUENCY_LIMITS.max,
+            FREQUENCY_LIMITS.min
           )
         : 0;
       const mappedY = y
@@ -53,8 +53,8 @@ function SynthFrequencyControls({
             y,
             0,
             height,
-            FREQUENCY_LIMITS.min,
-            x ? FREQUENCY_LIMITS.max / 2 : FREQUENCY_LIMITS.max
+            x ? FREQUENCY_LIMITS.max / 2 : FREQUENCY_LIMITS.max,
+            FREQUENCY_LIMITS.min
           )
         : 0;
       setFrequency(

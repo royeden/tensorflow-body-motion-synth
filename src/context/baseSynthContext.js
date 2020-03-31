@@ -87,11 +87,11 @@ export function BaseSynthProvider({ children }) {
     >
       <h1>Base Synth (Any synth you add will inherit this configuration):</h1>
       <Select
+        defaultValue={synthWaveType}
         label="Synth type:"
-        labelPrefix="Synth_base_synth_synth_type"
+        labelIdPrefix="Synth_base_synth_synth_type"
         onChange={setSynthWaveType}
         options={synthOptions}
-        value={synthWaveType}
       />
       <SynthBodyPartControls
         bodyPart={bodyPart}
