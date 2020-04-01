@@ -33,7 +33,7 @@ function SynthBodyControls({
       trackingDirection
         ? TRACKING_DIRECTIONS.find(
             option => option.value === trackingDirection
-          ).transformer(!IS_MOBILE)
+          ).transformer(IS_MOBILE)
         : noOp,
     [trackingDirection]
   );
@@ -66,7 +66,6 @@ function SynthBodyControls({
 
   useEffect(() => {
     if (trackedBodyPoint && onPositionChange) {
-      console.log(trackedBodyPoint)
       onPositionChange(trackedBodyPoint);
       if (!canPlay) setCanPlay(true);
     } else {
