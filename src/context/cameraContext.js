@@ -7,13 +7,13 @@ import React, {
   useState
 } from "react";
 
-import { createRefDescription } from "../constants/objects";
-import { noOp } from "../constants/functions";
 import useCanvasDraw from "../hooks/useCanvasDraw";
 import useModelDraw from "../hooks/useModelDraw";
 import useStream from "../hooks/useStream";
 import useToggle from "../hooks/useToggle";
 import useVideoDimensions from "../hooks/useVideoDimensions";
+import { createRefDescription } from "../constants/objects";
+import { noOp } from "../constants/functions";
 
 import { modelContext } from "./modelContext";
 

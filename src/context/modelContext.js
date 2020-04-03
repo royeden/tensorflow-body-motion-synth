@@ -1,9 +1,9 @@
 import React, { createContext, useEffect, useRef, useState } from "react";
 import * as bodyPix from "@tensorflow-models/body-pix";
 
-import { noOp } from "../constants/functions";
 import useToggle from "../hooks/useToggle";
 import { IS_MOBILE } from "../utils/mobileDetect";
+import { noOp } from "../constants/functions";
 
 export const modelContext = createContext({
   model: null,
