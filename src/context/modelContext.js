@@ -23,7 +23,7 @@ export function ModelProvider({ children }) {
   const [trackingActive, toggleTrackingActive] = useToggle();
 
   useEffect(() => {
-    if (!trackingActive && !modelLoaded) {
+    if (!modelLoaded) {
       async function getModel() {
         model.current = await bodyPix.load(
           IS_MOBILE
@@ -42,12 +42,10 @@ export function ModelProvider({ children }) {
         );
         console.log("Loaded model");
         toggleModelLoaded();
-
-        // toggleTrackingActive();
       }
       getModel();
     }
-  }, [modelLoaded, toggleModelLoaded, toggleTrackingActive, trackingActive]);
+  }, [modelLoaded, toggleModelLoaded]);
 
   return (
     <Provider
