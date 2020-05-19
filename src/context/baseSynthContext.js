@@ -40,6 +40,7 @@ export function BaseSynthProvider({ children }) {
   const [maxNote, setMaxNote] = useState(88);
   const [minNote, setMinNote] = useState(0);
   const [tet, setTet] = useState(BASE_TET);
+  // TODO remove this
   const [frequency, setFrequency] = useTemperamentScale(A4_440.position, {
     baseNoteFrequency: baseFrequency,
     baseNotePosition: centerNote,

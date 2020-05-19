@@ -17,7 +17,7 @@ function Input({
   validation,
   ...props
 }) {
-  const id = useRef(`${labelIdPrefix || label}_${Date.now()}`);
+  const id = useRef(`${labelIdPrefix || label}`);
   const [error, setError] = useState(false);
   const [inputValue, setInputValue] = useState(defaultValue);
   const additionalPropsWithLabel = label ? { id: id.current } : {};

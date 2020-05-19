@@ -8,32 +8,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
-
 button {
   border-radius: 6px;
   cursor: pointer;
   padding: 8px;
-}
-
-.main {
-  align-items: center;
-  display: flex;
-  height: 100vh;
-  flex-direction: column;
-  justify-content: center;
-  margin: 0;
-  padding: 0;
-  width: 100vw;
-}
-
-.main__video, .main__image {
-  display: none;
-}
-
-.main__canvas--flip {
-  transform: rotateY(180deg);
 }

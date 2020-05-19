@@ -11,7 +11,7 @@ function Select({
   placeholder,
   ...props
 }) {
-  const id = useRef(`${labelIdPrefix || label}_${Date.now()}`);
+  const id = useRef(`${labelIdPrefix || label}`);
   const additionalPropsWithLabel = label ? { id: id.current } : {};
   const handleChange = useCallback(event => onChange(event.target.value), [
     onChange
