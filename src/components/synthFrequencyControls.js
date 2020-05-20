@@ -5,6 +5,7 @@ import { map, mapWithinBoundary } from "../utils/math";
 
 import SynthBodyControls from "./synthBodyControls";
 import SynthFrequencyNotesControls from "./synthFrequencyNotesControls";
+import { getFrequencyFromAnyPosition } from "../utils/music";
 
 function SynthFrequencyControls({
   baseFrequency,
@@ -33,10 +34,10 @@ function SynthFrequencyControls({
   tet,
   toggleRoundPosition,
   trackingDirection,
-  width
+  width,
 }) {
   const handleFrequencyPositionChange = useCallback(
-    position => {
+    (position) => {
       const x = position.x && mapWithinBoundary(position.x, 0, width);
       const y = position.y && mapWithinBoundary(position.y, 0, height);
       const mappedX = x
@@ -59,16 +60,18 @@ function SynthFrequencyControls({
         : 0;
       setFrequency(
         mappedX > 0 || mappedY > 0
-          ? // TODO figure out how to scale accordingly, remeber that frequency is a logarythmic scale
-            (mappedX + mappedY) * (1 / Math.log(mappedX + mappedY))
+          ? getFrequencyFromAnyPosition(mappedX + mappedY, {
+              tet,
+              baseNoteFrequency: baseFrequency,
+            })
           : FREQUENCY_LIMITS.min
       );
     },
-    [height, setFrequency, width]
+    [baseFrequency, height, setFrequency, tet, width]
   );
 
   const handleNotePositionChange = useCallback(
-    position => {
+    (position) => {
       const x = position.x && mapWithinBoundary(position.x, 0, width);
       const y = position.y && mapWithinBoundary(position.y, 0, height);
       const mappedX = x
