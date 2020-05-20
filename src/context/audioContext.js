@@ -6,7 +6,7 @@ import { createRefDescription } from "../constants/objects";
 import { modelContext } from "./modelContext";
 
 export const audioContext = createContext({
-  audioContextObject: createRefDescription(new AudioContext())
+  audioContextObject: createRefDescription(new AudioContext()),
 });
 
 const { Provider } = audioContext;
@@ -22,3 +22,5 @@ export function AudioProvider({ children }) {
   }, [modelLoaded]);
   return <Provider value={{ audioContextObject }}>{children}</Provider>;
 }
+
+export default AudioProvider;

@@ -62,3 +62,5 @@ export function ModelProvider({ children }) {
     </Provider>
   );
 }
+
+export default ModelProvider;

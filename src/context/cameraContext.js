@@ -106,3 +106,5 @@ export function CameraProvider({ children }) {
     </Provider>
   );
 }
+
+export default CameraProvider;
