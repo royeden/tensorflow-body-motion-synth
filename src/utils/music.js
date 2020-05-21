@@ -29,7 +29,7 @@ export function getFrequencyFromAnyPosition(
   const relationInFrequency = getFactorizedValueFrom(baseNoteFrequency, 2);
   return (
     (tet *
-      Math.log(Math.E, position / (baseNoteFrequency / relationInFrequency))) /
+      Math.log(position / (baseNoteFrequency / Math.pow(2, relationInFrequency)))) /
       Math.LN2 -
     tet * relationInFrequency
   );
