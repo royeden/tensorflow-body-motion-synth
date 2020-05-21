@@ -58,6 +58,15 @@ function SynthFrequencyControls({
             x ? FREQUENCY_LIMITS.max / 2 : FREQUENCY_LIMITS.max
           )
         : 0;
+      // TODO add frequency max and min and make the center the exact half between them
+      // This is the correct setting for only frequency
+      // setFrequency(
+      //   mappedX > 0 || mappedY > 0
+      //     ? mappedX + mappedY
+      //     : FREQUENCY_LIMITS.min
+      // );
+
+      // This is a fun approach, the frequency is always low here
       setFrequency(
         mappedX > 0 || mappedY > 0
           ? getFrequencyFromAnyPosition(mappedX + mappedY, {
