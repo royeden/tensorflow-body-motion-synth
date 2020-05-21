@@ -11,22 +11,25 @@ import {
   BASE_TET,
   SYNTH_WAVE_TYPES
 } from "../constants/music";
+import { IS_DEVELOPMENT } from "../constants/development";
+import { MODEL_PARTS } from "../constants/model";
+import { TRACKING_DIRECTIONS } from "../utils/tracking";
 
 export const baseSynthContext = createContext({
   baseFrequency: A4_440.frequency,
-  bodyPart: "",
+  bodyPart: MODEL_PARTS[0].value,
   centerNote: A4_440.position,
   frequency: A4_440.frequency,
   maxNote: 88,
   minNote: 0,
-  muted: true,
+  muted: IS_DEVELOPMENT,
   notes: true,
   persist: true,
   resetSynthOnUpdate: true,
   roundPosition: true,
   synthWaveType: SYNTH_WAVE_TYPES[0],
   tet: BASE_TET,
-  trackingDirection: ""
+  trackingDirection: TRACKING_DIRECTIONS[0].value
 });
 
 const { Provider } = baseSynthContext;
@@ -47,14 +50,14 @@ export function BaseSynthProvider({ children }) {
     tet
   });
   // Synth toggle options
-  const [muted, toggleMuted] = useToggle(true);
+  const [muted, toggleMuted] = useToggle(IS_DEVELOPMENT);
   const [notes, toggleNotes] = useToggle(true);
   const [persist, togglePersist] = useToggle(true);
   const [resetSynthOnUpdate, toggleResetSynthOnUpdate] = useToggle(true);
   // Body part tracking options
-  const [bodyPart, setBodyPart] = useState("");
+  const [bodyPart, setBodyPart] = useState(IS_DEVELOPMENT ? "" : MODEL_PARTS[0].value);
   const [roundPosition, toggleRoundPosition] = useToggle(true);
-  const [trackingDirection, setTrackingDirection] = useState("");
+  const [trackingDirection, setTrackingDirection] = useState(IS_DEVELOPMENT ? "" : TRACKING_DIRECTIONS[0].value);
 
   const synthOptions = useMemo(
     () =>

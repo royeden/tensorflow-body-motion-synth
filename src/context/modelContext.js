@@ -2,6 +2,7 @@ import React, { createContext, useEffect, useRef, useState } from "react";
 import * as bodyPix from "@tensorflow-models/body-pix";
 
 import useToggle from "../hooks/useToggle";
+import { IS_DEVELOPMENT } from "../constants/development";
 import { IS_MOBILE } from "../utils/mobileDetect";
 import { noOp } from "../constants/functions";
 
@@ -11,7 +12,7 @@ export const modelContext = createContext({
   modelColorsOpacity: 0.7,
   setModelColorsOpacity: noOp,
   toggleTrackingActive: noOp,
-  trackingActive: false
+  trackingActive: false,
 });
 
 const { Provider } = modelContext;
@@ -31,21 +32,22 @@ export function ModelProvider({ children }) {
                 architecture: "MobileNetV1",
                 outputStride: 16,
                 multiplier: 0.75,
-                quantBytes: 2
+                quantBytes: 2,
               }
             : {
-              architecture: "MobileNetV1",
-              outputStride: 16,
-              multiplier: 0.75,
-              quantBytes: 2
-            }
+                architecture: "MobileNetV1",
+                outputStride: 16,
+                multiplier: 0.75,
+                quantBytes: 2,
+              }
         );
         console.log("Loaded model");
         toggleModelLoaded();
+        if (!IS_DEVELOPMENT) toggleTrackingActive();
       }
       getModel();
     }
-  }, [modelLoaded, toggleModelLoaded]);
+  }, [modelLoaded, toggleModelLoaded, toggleTrackingActive]);
 
   return (
     <Provider
@@ -55,7 +57,7 @@ export function ModelProvider({ children }) {
         modelColorsOpacity,
         setModelColorsOpacity,
         toggleTrackingActive,
-        trackingActive
+        trackingActive,
       }}
     >
       {children}

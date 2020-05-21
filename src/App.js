@@ -19,24 +19,34 @@ const LoadingContainer = styled.div`
   width: 100vw;
 `;
 
+const loading = (
+  <LoadingContainer>
+    <Loading />
+  </LoadingContainer>
+);
+
 function App() {
   return (
     <ErrorLayout>
-      <Suspense
-        fallback={
-          <LoadingContainer>
-            <Loading />
-          </LoadingContainer>
-        }
-      >
+      <Suspense fallback={loading}>
         <ModelProvider>
-          <CameraProvider>
-            <AudioProvider>
-              <CameraDisplay />
-              <CameraControls />
-              <PeopleControls />
-            </AudioProvider>
-          </CameraProvider>
+          <Suspense fallback={loading}>
+            <CameraProvider>
+              <Suspense fallback={loading}>
+                <AudioProvider>
+                  <Suspense fallback={loading}>
+                    <CameraDisplay />
+                  </Suspense>
+                  <Suspense fallback={loading}>
+                    <CameraControls />
+                  </Suspense>
+                  <Suspense fallback={loading}>
+                    <PeopleControls />
+                  </Suspense>
+                </AudioProvider>
+              </Suspense>
+            </CameraProvider>
+          </Suspense>
         </ModelProvider>
       </Suspense>
     </ErrorLayout>
