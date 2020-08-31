@@ -22,6 +22,7 @@ export const cameraContext = createContext({
   canvasOpacity: 0.7,
   peopleTracked: [],
   setCanvasOpacity: noOp,
+  setVideoActive: noOp,
   toggleVideoActive: noOp,
   video: createRefDescription(),
   videoActive: noOp
@@ -35,7 +36,7 @@ export function CameraProvider({ children }) {
   );
   const [canvasOpacity, setCanvasOpacity] = useState(0.7);
   const [peopleTracked, setPeopleTracked] = useState([]);
-  const [videoActive, toggleVideoActive] = useToggle();
+  const [videoActive, toggleVideoActive, setVideoActive] = useToggle();
 
   const auxiliaryCanvasRef = useRef(document.createElement("canvas"));
   const auxiliaryImageRef = useRef(document.createElement("img"));
@@ -44,7 +45,7 @@ export function CameraProvider({ children }) {
 
   const drawTrackedId = useCallback(({ id }) => id + 1, []);
 
-  useStream(videoRef);
+  useStream(videoRef, videoActive);
 
   const [width, height] = useVideoDimensions(videoRef, videoActive);
 
@@ -97,6 +98,7 @@ export function CameraProvider({ children }) {
         canvasOpacity,
         peopleTracked,
         setCanvasOpacity,
+        setVideoActive,
         toggleVideoActive,
         video: videoRef,
         videoActive

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useCallback, useContext } from "react";
 import styled, { css } from "styled-components";
 
 import { IS_MOBILE } from "../utils/mobileDetect";
@@ -59,17 +59,19 @@ function CameraDisplay() {
     canvasOpacity,
     canvas,
     peopleTracked,
-    toggleVideoActive,
+    setVideoActive,
     video,
     videoActive
   } = useContext(cameraContext);
   const { trackingActive } = useContext(modelContext);
+
+  const handlePlay = useCallback(() => setVideoActive(true), [setVideoActive])
   return (
     <>
       <CameraContainer>
         <VideoCamera
           autoPlay
-          onPlayCapture={toggleVideoActive}
+          onPlayCapture={handlePlay}
           ref={video}
           videoActive={videoActive}
         />
